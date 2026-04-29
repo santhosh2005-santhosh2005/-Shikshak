@@ -114,7 +114,8 @@ export const chatWithPDF = async (
   provider: AIProvider = 'gemini'
 ): Promise<string> => {
   try {
-    const systemPrompt = `You are an AI assistant helping users understand their PDF documents. 
+    const systemPrompt = pdfText 
+      ? `You are an AI assistant helping users understand their PDF documents. 
 
 PDF CONTENT:
 ${pdfText.substring(0, 15000)} 
@@ -124,7 +125,9 @@ INSTRUCTIONS:
 - If the answer is not in the PDF, say so clearly
 - Provide clear, concise, and helpful responses
 - Use formatting (bullet points, numbered lists) when appropriate
-- Stay focused on the PDF content`;
+- Stay focused on the PDF content`
+      : `You are a helpful and knowledgeable AI assistant called Shikshak. You can help with math, science, coding, and general questions. 
+         Provide clear, concise, and accurate answers. Use Markdown for formatting and math equations where appropriate.`;
 
     if (provider === 'gemini') {
       if (!genAI) {

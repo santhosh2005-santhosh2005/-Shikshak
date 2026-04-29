@@ -104,7 +104,7 @@ const AIChatPage = () => {
 
   // Handle sending message
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() || !pdfText) return;
+    if (!inputMessage.trim()) return;
 
     const userMessage: ChatMessage = {
       role: "user",
@@ -301,7 +301,7 @@ const AIChatPage = () => {
                       handleSendMessage();
                     }
                   }}
-                  placeholder={pdfFile ? "Ask anything..." : "Upload a PDF to get started..."}
+                  placeholder={pdfFile ? "Ask about your PDF..." : "Ask me anything (Math, Science, etc.)..."}
                   className="flex-1 bg-transparent border-none focus:ring-0 text-lg py-2 resize-none outline-none"
                   style={{ minHeight: '44px', maxHeight: '200px' }}
                 />
@@ -341,7 +341,7 @@ const AIChatPage = () => {
 
                   <Button 
                     onClick={handleSendMessage}
-                    disabled={!pdfFile || isLoading || !inputMessage.trim()}
+                    disabled={isLoading || !inputMessage.trim()}
                     size="icon"
                     className={`h-10 w-10 rounded-full transition-all ${
                       isNeo 
