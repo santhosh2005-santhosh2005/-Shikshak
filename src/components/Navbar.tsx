@@ -27,12 +27,12 @@ export const Navbar = () => {
 
   const navLinks = [
     { text: "Home", href: "/" },
-    { text: "About", href: "/about" },
-    { text: "Tests", href: "/tests" },
-    { text: "Improve", href: "/improve" },
-    { text: "Support", href: "/support" },
+    { text: "Start Learning", href: "/tests" },
+    { text: "Progress", href: "/improve" },
     { text: "Dashboard", href: "/teacher-dashboard" },
-    { text: "Digest", href: "/parent-digest" },
+    { text: "Report", href: "/parent-digest" },
+    { text: "Support", href: "/support" },
+    { text: "About", href: "/about" },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -51,12 +51,12 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2">
+          <nav className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
               <Link
                 key={link.text}
                 to={link.href}
-                className={`px-4 py-2 text-sm font-black uppercase transition-all ${
+                className={`px-3 py-2 text-xs xl:text-sm font-black uppercase transition-all ${
                   isActive(link.href)
                     ? (isNeo ? "bg-black text-white" : "text-primary bg-primary/10 rounded-lg")
                     : (isNeo ? "text-black hover:bg-black/5" : "text-slate-600 hover:text-primary")
@@ -86,15 +86,11 @@ export const Navbar = () => {
                   </Button>
                 </Link>
               )}
-              <div className={isNeo ? "border-4 border-black p-1 bg-white" : ""}>
-                <ThemeToggle />
-              </div>
             </div>
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center md:hidden gap-2">
-            <ThemeToggle />
+          <div className="flex items-center lg:hidden gap-2">
             <Button
               variant="ghost"
               size="icon"
@@ -114,7 +110,7 @@ export const Navbar = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed inset-x-4 top-24 z-40 md:hidden"
+            className="fixed inset-x-4 top-24 z-40 lg:hidden"
           >
             <div className={`p-6 ${isNeo ? "bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" : "bg-white rounded-3xl border shadow-xl shadow-slate-200/50 backdrop-blur-xl"}`}>
               <nav className="flex flex-col space-y-2">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Globe, Users, Mail, Phone, Heart, Building, Send, Brain, BookOpen, CheckCircle, Clock } from "lucide-react";
+import { ArrowRight, Globe, Users, Mail, Phone, Heart, Building, Send, Brain, BookOpen, CheckCircle, Clock, Star } from "lucide-react";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { Navbar } from "@/components/Navbar";
 import { useAccessibility } from "@/components/AccessibilitySettings";
@@ -167,42 +167,92 @@ const Index = () => {
         <TTSBanner />
 
         {/* ── HERO PAGE ─────────────────────────────────── */}
-        <section className={`min-h-screen flex items-center ${settings.textToSpeech ? 'pt-36' : 'pt-20'} pb-12 px-4 ${isNeo ? "border-b-8 border-black bg-white" : ""}`}>
-          <div className={`container mx-auto max-w-6xl transition-all duration-1000 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <section className={`min-h-screen flex items-center ${settings.textToSpeech ? 'pt-36' : 'pt-24'} pb-12 px-4 overflow-hidden ${isNeo ? "border-b-8 border-black bg-white" : ""}`}>
+          <div className={`container mx-auto max-w-7xl transition-all duration-1000 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
             
-            <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-6 md:space-y-8">
-              <div className="flex flex-wrap justify-center gap-3">
-                <TTSText text="Neuro-Adaptive">
-                  <span className={s.tag}>NEURO-ADAPTIVE</span>
-                </TTSText>
-                <TTSText text="Shikshak 2.0">
-                  <span className={s.tagLight}>SHIKSHAK 2.0</span>
-                </TTSText>
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+              {/* Left Column: Text Content */}
+              <div className="flex flex-col items-start text-left space-y-6 md:space-y-8 z-10">
+                <div className="flex flex-wrap justify-start gap-3">
+                  <TTSText text="Neuro-Adaptive">
+                    <span className={s.tag}>NEURO-ADAPTIVE</span>
+                  </TTSText>
+                  <TTSText text="Shikshak 2.0">
+                    <span className={s.tagLight}>SHIKSHAK 2.0</span>
+                  </TTSText>
+                </div>
+
+                <AnimatedHeading delay={200} className={`${s.sectionTitle} text-5xl md:text-6xl lg:text-[5rem] xl:text-[6rem] leading-[1.1] md:leading-[1.05]`}>
+                  <TTSText text="Personalized Learning for Every Child.">
+                    PERSONALIZED<br />
+                    LEARNING <br />
+                    <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4 mt-2 inline-block" : ""}>FOR EVERY</span><br />
+                    <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>CHILD.</span>
+                  </TTSText>
+                </AnimatedHeading>
+                
+                <p className={`text-lg md:text-xl max-w-lg leading-relaxed ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
+                  <TTSText text="We understand how your child learns and adapt education to match.">
+                    We understand how your child learns and adapt education to match.
+                  </TTSText>
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
+                  <Link to="/tests" className={s.btnPrimary}>
+                    START SCREENING <ArrowRight className="h-6 w-6" />
+                  </Link>
+                  <Link to="/about" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
+                    OUR MISSION
+                  </Link>
+                </div>
               </div>
 
-              <AnimatedHeading delay={200} className={`${s.sectionTitle} text-4xl md:text-7xl lg:text-8xl`}>
-                <TTSText text="Learn Without Limits. Grow Without Friction.">
-                  LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
-                  <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>GROW WITHOUT FRICTION.</span>
-                </TTSText>
-              </AnimatedHeading>
-              
-              <p className={`text-lg md:text-2xl max-w-2xl leading-tight ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
-                <TTSText text="Experience a vibrant, accessible platform designed specifically to support unique learning styles.">
-                  Experience a vibrant, accessible platform designed specifically to support unique learning styles.
-                </TTSText>
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 md:gap-8 pt-4">
-                <Link to="/tests" className={s.btnPrimary}>
-                  START SCREENING <ArrowRight className="h-6 w-6" />
-                </Link>
-                <Link to="/about" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
-                  OUR MISSION
-                </Link>
+              {/* Right Column: Image container with styling similar to reference */}
+              <div className="relative mt-8 lg:mt-0 w-full max-w-lg mx-auto lg:max-w-none lg:ml-auto">
+                {/* Background accent block */}
+                <div className={`absolute top-4 -right-4 md:-right-8 w-full h-[90%] bg-[#FEF08A] rounded-[2rem] transform rotate-3 ${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" : "shadow-xl opacity-60"}`}></div>
+                
+                {/* Main Image/Video container */}
+                <div className={`relative z-10 w-full overflow-hidden rounded-[2rem] bg-white transform -rotate-2 hover:rotate-0 transition-transform duration-500 ${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" : "border-4 border-white shadow-2xl"}`}>
+                  <video 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline
+                    className="w-full h-[350px] md:h-[450px] lg:h-[550px] object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
+                  >
+                    <source src="/hero-video.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  {/* Overlay texture if Neo */}
+                  {isNeo && <div className="absolute inset-0 bg-black opacity-10 pointer-events-none mix-blend-overlay"></div>}
+                </div>
+                
+                {/* Floating decorative elements */}
+                <div className={`absolute -left-6 bottom-12 z-20 w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#86EFAC] flex items-center justify-center animate-bounce ${isNeo ? "border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "shadow-lg"}`}>
+                  <Star className="h-8 w-8 md:h-10 md:w-10 text-black fill-black" />
+                </div>
               </div>
             </div>
 
+          </div>
+        </section>
+
+        {/* ── CHILD HOME ENTRY ───────────────────────────── */}
+        <section className={`py-16 px-4 ${isNeo ? "border-b-8 border-black bg-[#D8B4FE]" : "bg-purple-50 border-b border-gray-200"}`}>
+          <div className="container mx-auto max-w-4xl text-center space-y-8">
+            <h2 className={`${s.sectionTitle} text-4xl md:text-6xl flex items-center justify-center gap-4`}>
+              Let’s Learn Your Way 🚀
+            </h2>
+            <p className={s.textBase}>We adapt learning based on how you understand best.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link to="/tests" className={s.btnPrimary}>
+                START LEARNING <ArrowRight className="h-5 w-5" />
+              </Link>
+              <Link to="/learning" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
+                CONTINUE SESSION
+              </Link>
+            </div>
           </div>
         </section>
 

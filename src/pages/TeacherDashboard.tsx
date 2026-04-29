@@ -73,21 +73,21 @@ const TeacherDashboard = () => {
                 <div
                   key={student.id}
                   onClick={() => setSelectedStudent(student)}
-                  className={`${s.card} ${isNeo ? (selectedStudent?.id === student.id ? "bg-[#86EFAC]" : "bg-white") : (selectedStudent?.id === student.id ? "border-black bg-gray-100" : "bg-white")} cursor-pointer flex items-center justify-between p-4`}
+                  className={`bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md cursor-pointer flex items-center justify-between p-5 ${selectedStudent?.id === student.id ? "ring-2 ring-blue-500 bg-blue-50/50" : ""}`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`h-12 w-12 border-4 border-black flex items-center justify-center font-black ${isNeo ? "bg-white" : "bg-gray-200"}`}>
+                    <div className="h-12 w-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
                       {student.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-black text-lg">{student.name}</h3>
+                      <h3 className="font-semibold text-gray-900">{student.name}</h3>
                       <div className="flex gap-2 mt-1">
-                         <span className="text-[10px] font-black uppercase bg-black text-white px-1">{student.learningType}</span>
-                         <span className={`text-[10px] font-black uppercase px-1 border-2 border-black ${student.riskLevel === 'High' ? 'bg-red-500' : 'bg-green-500'}`}>{student.riskLevel}</span>
+                         <span className="text-xs font-medium text-gray-500 capitalize">{student.learningType}</span>
+                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${student.riskLevel === 'High' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{student.riskLevel} Risk</span>
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className={`h-6 w-6 transition-transform ${selectedStudent?.id === student.id ? "rotate-90" : ""}`} />
+                  <ChevronRight className={`h-5 w-5 text-gray-400 transition-transform ${selectedStudent?.id === student.id ? "rotate-90 text-blue-500" : ""}`} />
                 </div>
               ))}
             </div>
@@ -102,95 +102,101 @@ const TeacherDashboard = () => {
                   exit={{ opacity: 0, x: 20 }}
                   className="lg:col-span-8 space-y-8"
                 >
-                  <div className={`${s.card} ${isNeo ? "bg-[#FDA4AF]" : "bg-white"} p-8`}>
-                    <div className="flex flex-col md:flex-row justify-between gap-6 mb-8">
+                  <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
+                    <div className="flex flex-col md:flex-row justify-between gap-6 mb-10 pb-6 border-b border-gray-100">
                        <div>
-                          <h2 className="text-4xl font-black uppercase tracking-tighter">{selectedStudent.name}</h2>
-                          <p className="font-bold opacity-70">LEARNING PROFILE ANALYSIS</p>
+                          <h2 className="text-3xl font-bold text-gray-900">{selectedStudent.name}</h2>
+                          <p className="text-gray-500 font-medium mt-1">Learning Profile Analysis</p>
                        </div>
-                       <div className="text-right">
-                          <div className="text-xs font-black uppercase mb-1">Risk Status</div>
-                          <div className={`inline-block px-4 py-1 border-4 border-black font-black uppercase ${selectedStudent.riskLevel === 'High' ? 'bg-red-500 text-white' : 'bg-green-500'}`}>
-                             {selectedStudent.riskLevel}
+                       <div className="text-left md:text-right">
+                          <div className="text-sm font-medium text-gray-500 mb-1">Risk Status</div>
+                          <div className={`inline-block px-4 py-1.5 rounded-full font-medium ${selectedStudent.riskLevel === 'High' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                             {selectedStudent.riskLevel} Risk
                           </div>
                        </div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-6">
-                      <div className={`p-6 border-4 border-black bg-white flex flex-col items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                        <Target className="h-8 w-8 mb-2" />
-                        <div className="text-3xl font-black">{selectedStudent.accuracy}%</div>
-                        <div className="text-xs font-black uppercase">Accuracy</div>
+                    <div className="grid md:grid-cols-3 gap-6 mb-8">
+                      <div className="p-6 rounded-2xl bg-blue-50/50 flex flex-col items-center">
+                        <Target className="h-6 w-6 mb-3 text-blue-500" />
+                        <div className="text-3xl font-bold text-gray-900">{selectedStudent.accuracy}%</div>
+                        <div className="text-sm font-medium text-gray-500 mt-1">Accuracy</div>
                       </div>
-                      <div className={`p-6 border-4 border-black bg-white flex flex-col items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                        <Clock className="h-8 w-8 mb-2 text-blue-500" />
-                        <div className="text-3xl font-black">{selectedStudent.avgTime}s</div>
-                        <div className="text-xs font-black uppercase">Avg Response</div>
+                      <div className="p-6 rounded-2xl bg-purple-50/50 flex flex-col items-center">
+                        <Clock className="h-6 w-6 mb-3 text-purple-500" />
+                        <div className="text-3xl font-bold text-gray-900">{selectedStudent.avgTime}s</div>
+                        <div className="text-sm font-medium text-gray-500 mt-1">Avg Response</div>
                       </div>
-                      <div className={`p-6 border-4 border-black bg-white flex flex-col items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                        <Activity className="h-8 w-8 mb-2 text-purple-500" />
-                        <div className="text-xl font-black uppercase">{selectedStudent.learningType}</div>
-                        <div className="text-xs font-black uppercase">Profile</div>
+                      <div className="p-6 rounded-2xl bg-emerald-50/50 flex flex-col items-center">
+                        <Activity className="h-6 w-6 mb-3 text-emerald-500" />
+                        <div className="text-xl font-bold text-gray-900 capitalize">{selectedStudent.learningType}</div>
+                        <div className="text-sm font-medium text-gray-500 mt-1">Profile Focus</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <div className={`${s.card} ${isNeo ? "bg-[#86EFAC]" : "bg-white"}`}>
-                      <h3 className="text-2xl font-black uppercase mb-6 flex items-center gap-2">
-                        <Brain className="h-6 w-6" /> WEAK AREAS
+                  <div className="grid md:grid-cols-2 gap-8 mb-8">
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <Brain className="h-5 w-5 text-gray-400" /> Weak Areas
                       </h3>
-                      <div className="space-y-4 mb-8">
+                      <div className="space-y-3 mb-8">
                         {selectedStudent.weakAreas.map((wa, i) => (
-                          <div key={i} className="flex justify-between items-center bg-white border-4 border-black p-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                            <span className="font-bold">{wa.area}</span>
-                            <span className="font-black uppercase text-xs px-2 bg-black text-white">{wa.level}</span>
+                          <div key={i} className="flex justify-between items-center bg-gray-50 rounded-xl p-4">
+                            <span className="font-medium text-gray-700">{wa.area}</span>
+                            <span className="font-medium text-sm text-amber-600 bg-amber-100 px-3 py-1 rounded-full">{wa.level}</span>
                           </div>
                         ))}
                       </div>
-                      <div className="pt-6 border-t-4 border-black">
-                        <div className="flex justify-between font-black uppercase mb-2">
-                          <span>ATTENTION SPAN</span>
+                      <div className="pt-6 border-t border-gray-100">
+                        <div className="flex justify-between text-sm font-medium text-gray-600 mb-3">
+                          <span>Attention Span</span>
                           <span>{selectedStudent.attentionSpan}%</span>
                         </div>
-                        <div className="h-6 w-full border-4 border-black bg-white">
-                           <div className="h-full bg-black transition-all" style={{ width: `${selectedStudent.attentionSpan}%` }} />
+                        <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden">
+                           <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${selectedStudent.attentionSpan}%` }} />
                         </div>
                       </div>
                     </div>
 
-                    <div className={`${s.card} ${isNeo ? "bg-[#D8B4FE]" : "bg-white"}`}>
-                       <h3 className="text-2xl font-black uppercase mb-6 flex items-center gap-2">
-                        <HelpCircle className="h-6 w-6" /> WHY IT HAPPENS
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                       <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <HelpCircle className="h-5 w-5 text-gray-400" /> Why this is happening
                       </h3>
-                      <div className="bg-white border-4 border-black p-4 mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                         <p className="font-bold text-sm leading-tight">{studentInsights?.whyExplanation || selectedStudent.behaviorInsight}</p>
+                      <div className="bg-blue-50/50 rounded-xl p-5 mb-6 text-gray-700 leading-relaxed">
+                         <p>{studentInsights?.whyExplanation || selectedStudent.behaviorInsight}</p>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-[#86EFAC] border-4 border-black p-2 font-black uppercase text-[10px]">Strength: {studentInsights?.studentStrength || "Persistent"}</div>
-                        <div className="bg-[#FDA4AF] border-4 border-black p-2 font-black uppercase text-[10px]">Challenge: {studentInsights?.mainChallenge || "Speed"}</div>
+                        <div className="bg-emerald-50 rounded-xl p-4">
+                          <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1">Strength</div>
+                          <div className="text-gray-900 font-medium">{studentInsights?.studentStrength || "Persistent"}</div>
+                        </div>
+                        <div className="bg-rose-50 rounded-xl p-4">
+                          <div className="text-xs font-semibold text-rose-600 uppercase tracking-wider mb-1">Challenge</div>
+                          <div className="text-gray-900 font-medium">{studentInsights?.mainChallenge || "Speed"}</div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className={`${s.card} ${isNeo ? "bg-[#FEF08A]" : "bg-white"}`}>
-                    <h3 className="text-2xl font-black uppercase mb-6 flex items-center gap-2">
-                      <Lightbulb className="h-6 w-6" /> RECOMMENDED ACTIONS
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5 text-gray-400" /> Suggested Actions
                     </h3>
                     <div className="grid md:grid-cols-2 gap-6 mb-8">
-                      <div className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <div className="text-[10px] font-black uppercase mb-2">Approach</div>
-                        <p className="text-sm font-bold">{studentInsights?.teachingApproach || "Adaptive methods"}</p>
+                      <div className="bg-gray-50 rounded-xl p-5">
+                        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Approach</div>
+                        <p className="font-medium text-gray-900">{studentInsights?.teachingApproach || "Adaptive methods"}</p>
                       </div>
-                      <div className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <div className="text-[10px] font-black uppercase mb-2">Learning Style</div>
-                        <p className="text-sm font-bold uppercase">{studentInsights?.learningStyle || "Individualized"}</p>
+                      <div className="bg-gray-50 rounded-xl p-5">
+                        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Learning Style</div>
+                        <p className="font-medium text-gray-900 capitalize">{studentInsights?.learningStyle || "Individualized"}</p>
                       </div>
                     </div>
                     <ul className="space-y-3">
                       {(studentInsights?.recommendedActions || selectedStudent.recommendations).map((rec, i) => (
-                        <li key={i} className="flex gap-4 items-center bg-white border-4 border-black p-3 font-black text-sm uppercase">
-                          <div className="h-4 w-4 bg-black flex-shrink-0" />
+                        <li key={i} className="flex gap-3 items-center bg-gray-50 rounded-xl p-4 font-medium text-gray-700">
+                          <div className="h-2 w-2 rounded-full bg-blue-500 flex-shrink-0" />
                           {rec}
                         </li>
                       ))}

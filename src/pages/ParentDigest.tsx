@@ -53,23 +53,25 @@ const ParentDigest = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <span className={s.tag}>PARENT PORTAL</span>
-            <h1 className={`${s.sectionTitle} mt-4 text-center`}>DAILY DIGEST.</h1>
-            <p className={s.textMuted}>Simple, supportive insights into your child's journey.</p>
+            <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider">PARENT PORTAL</span>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mt-6 mb-4">Today's Report</h1>
+            <p className="text-lg text-gray-500">Simple, supportive insights into your child's journey.</p>
           </motion.div>
 
           {!report && !isGenerating && (
-            <div className={`${s.card} ${isNeo ? "bg-[#FDA4AF]" : "bg-white"} text-center p-12`}>
-              <Sparkles className="h-16 w-16 mx-auto mb-6" />
-              <h3 className="text-2xl font-black uppercase mb-4">READY FOR AN UPDATE?</h3>
-              <p className={`${s.textBase} mb-10`}>
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm text-center p-12">
+              <div className="h-20 w-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="h-10 w-10" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready for an update?</h3>
+              <p className="text-lg text-gray-600 mb-10 max-w-lg mx-auto">
                 Our AI will analyze your child's recent activities and create a supportive summary just for you.
               </p>
               <button 
-                className={s.btnPrimary}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg px-8 py-4 rounded-full transition-colors inline-flex items-center gap-2 shadow-sm"
                 onClick={generateParentSummary}
               >
-                GENERATE TODAY'S REPORT
+                Generate Today's Report
               </button>
             </div>
           )}
@@ -88,84 +90,75 @@ const ParentDigest = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="space-y-10"
               >
-                <div className={`${s.card} p-0 overflow-hidden bg-white`}>
-                  <div className={`p-8 ${isNeo ? "bg-black text-white" : "bg-gray-100"} border-b-8 border-black`}>
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h2 className="text-3xl font-black uppercase flex items-center gap-3">
-                          <FileText className="h-8 w-8" /> PROGRESS REPORT
+                        <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                          <FileText className="h-8 w-8 text-blue-500" /> Today's Report
                         </h2>
-                        <div className="flex items-center gap-2 mt-2 font-bold opacity-80">
+                        <div className="flex items-center gap-2 mt-3 font-medium text-gray-500">
                           <Calendar className="h-4 w-4" /> {report.date}
                         </div>
                       </div>
-                      <button className={`p-2 border-4 border-black ${isNeo ? "bg-white text-black" : "bg-white"}`}>
+                      <button className="p-2.5 bg-white rounded-full text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors border border-gray-200 shadow-sm">
                         <Share2 className="h-5 w-5" />
                       </button>
                     </div>
                   </div>
                   
-                  <div className="p-8 space-y-12">
+                  <div className="p-8 md:p-10 space-y-12">
                     <section>
-                      <h3 className="text-xl font-black uppercase mb-4 flex items-center gap-2">
-                        <Heart className="h-5 w-5 text-red-500" /> TODAY'S STORY
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-rose-500" /> Summary
                       </h3>
-                      <p className="text-xl font-bold leading-tight">{report.summary}</p>
-                    </section>
-
-                    <section className="grid md:grid-cols-2 gap-6">
-                       <div className={`p-6 border-4 border-black bg-[#86EFAC] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                          <div className="text-xs font-black uppercase mb-2">Key Strength</div>
-                          <p className="font-black text-lg">{report.strength}</p>
-                       </div>
-                       <div className={`p-6 border-4 border-black bg-[#D8B4FE] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                          <div className="text-xs font-black uppercase mb-2">Current Focus</div>
-                          <p className="font-black text-lg uppercase">Skill Building</p>
-                       </div>
+                      <p className="text-2xl md:text-3xl font-medium text-gray-800 leading-relaxed bg-rose-50/50 p-6 rounded-2xl">
+                        {report.summary}
+                      </p>
                     </section>
 
                     <section>
-                      <h3 className="text-xl font-black uppercase mb-6 flex items-center gap-2">
-                        <Target className="h-5 w-5 text-blue-500" /> WHAT WE OBSERVED
+                      <h3 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
+                        <Target className="h-5 w-5 text-blue-500" /> Key Observations
                       </h3>
-                      <div className="space-y-4">
+                      <ul className="space-y-4 bg-blue-50/30 p-6 rounded-2xl">
                         {report.observations.map((obs: string, i: number) => (
-                          <div key={i} className="flex gap-4 p-4 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                            <CheckCircle2 className="h-6 w-6 text-green-500 shrink-0" />
-                            <span className="font-bold">{obs}</span>
-                          </div>
+                          <li key={i} className="flex items-start gap-4">
+                            <div className="mt-1 h-2 w-2 rounded-full bg-blue-500 shrink-0" />
+                            <span className="text-lg text-gray-700">{obs}</span>
+                          </li>
                         ))}
-                      </div>
+                      </ul>
                     </section>
 
                     <section>
-                      <h3 className="text-xl font-black uppercase mb-6 flex items-center gap-2">
-                        <Lightbulb className="h-5 w-5 text-yellow-500" /> AT-HOME SUPPORT
+                      <h3 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
+                        <Lightbulb className="h-5 w-5 text-amber-500" /> Suggestions for Home
                       </h3>
-                      <div className="grid gap-6">
+                      <div className="grid gap-4 bg-amber-50/30 p-6 rounded-2xl">
                         {report.suggestions.map((sug: string, i: number) => (
-                          <div key={i} className="flex gap-6">
-                            <div className="h-10 w-10 border-4 border-black bg-[#FEF08A] flex items-center justify-center font-black text-xl shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                          <div key={i} className="flex gap-4 items-start">
+                            <div className="h-8 w-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm shrink-0">
                               {i + 1}
                             </div>
-                            <span className="font-bold pt-2">{sug}</span>
+                            <span className="text-lg text-gray-700 pt-0.5">{sug}</span>
                           </div>
                         ))}
                       </div>
                     </section>
 
-                    <div className="pt-8 border-t-8 border-black flex justify-center">
+                    <div className="pt-8 border-t border-gray-100 flex justify-center">
                       <button 
-                        className={s.btnSecondary}
+                        className="text-gray-500 hover:text-gray-900 font-medium px-6 py-2 transition-colors"
                         onClick={() => setReport(null)}
                       >
-                        GENERATE NEW REPORT
+                        Generate New Report
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-center font-black uppercase text-sm opacity-50">
+                <p className="text-center font-medium text-gray-400 text-sm">
                   Created with love for your child's unique path.
                 </p>
               </motion.div>

@@ -72,26 +72,28 @@ const LearningMode = () => {
     <div className={`${s.card} ${isNeo ? "bg-[#D8B4FE]" : "bg-white"} p-0 overflow-hidden`}>
       <div className={`p-6 border-b-4 border-black flex justify-between items-center ${isNeo ? "bg-white" : "bg-gray-100"}`}>
         <h2 className="text-2xl font-black uppercase tracking-tighter">{lessonData.title}</h2>
-        <button onClick={() => isReading ? stopReading() : readText(lessonData.passage)} className={`p-2 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-          {isReading ? <VolumeX className="h-6 w-6 animate-pulse" /> : <Volume2 className="h-6 w-6" />}
+        <button onClick={() => isReading ? stopReading() : readText(lessonData.passage)} className={`p-3 border-4 border-black bg-[#FEF08A] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2 font-black uppercase hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all`}>
+          {isReading ? <><VolumeX className="h-6 w-6 animate-pulse" /> STOP</> : <><Volume2 className="h-6 w-6" /> LISTEN</>}
         </button>
       </div>
       <div className="p-8">
-        <div className={`mb-10 p-6 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-2xl leading-relaxed`}>
-          {lessonData.passage}
+        <div className={`mb-10 p-6 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-2xl md:text-3xl leading-relaxed font-medium`}>
+          {lessonData.passage.split(" ").map((word: string, i: number) => (
+            <span key={i} className="hover:bg-[#FEF08A] transition-colors cursor-pointer px-1 rounded">{word} </span>
+          ))}
         </div>
         <h3 className="text-xl font-black uppercase mb-6">{lessonData.question}</h3>
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           {lessonData.options.map((opt: string) => (
-            <button key={opt} onClick={() => setSelectedAnswer(opt)} className={`p-4 border-4 border-black font-black uppercase transition-all ${selectedAnswer === opt ? "bg-black text-white translate-x-1 translate-y-1 shadow-none" : "bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"}`}>
+            <button key={opt} onClick={() => setSelectedAnswer(opt)} className={`p-4 border-4 border-black font-black uppercase transition-all ${selectedAnswer === opt ? "bg-black text-white translate-x-1 translate-y-1 shadow-none" : "bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-50"}`}>
               {opt}
             </button>
           ))}
         </div>
-        <button className={`${s.btnPrimary} w-full`} onClick={handleCheckAnswer} disabled={!selectedAnswer}>CHECK ANSWER</button>
+        <button className={`${s.btnPrimary} w-full text-xl py-6`} onClick={handleCheckAnswer} disabled={!selectedAnswer}>CHECK ANSWER</button>
         {showFeedback && (
-          <div className={`mt-6 p-4 border-4 border-black font-black uppercase text-center ${isCorrect ? "bg-[#86EFAC]" : "bg-red-400"}`}>
-            {isCorrect ? "EXCELLENT! CORRECT." : "NOT QUITE, TRY AGAIN!"}
+          <div className={`mt-6 p-4 border-4 border-black font-black uppercase text-center text-xl ${isCorrect ? "bg-[#86EFAC]" : "bg-[#FDA4AF]"}`}>
+            {isCorrect ? "EXCELLENT! CORRECT. 🌟" : "NOT QUITE, TRY AGAIN!"}
           </div>
         )}
       </div>
@@ -101,27 +103,27 @@ const LearningMode = () => {
   const renderADHDMode = () => (
     <div className="space-y-8">
       <div className="flex justify-between gap-4">
-        <div className={`${s.card} flex-1 py-4 flex items-center justify-center gap-4 bg-[#FEF08A]`}>
-          <Timer className="h-8 w-8" /> <span className="text-3xl font-black">{timer}s</span>
+        <div className={`${s.card} flex-1 py-6 flex items-center justify-center gap-4 bg-[#FEF08A] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-4 border-black`}>
+          <Timer className="h-10 w-10 animate-pulse" /> <span className="text-4xl font-black">{timer}s</span>
         </div>
-        <div className={`${s.card} flex-1 py-4 flex items-center justify-center gap-4 bg-[#86EFAC]`}>
-          <Trophy className="h-8 w-8" /> <span className="text-3xl font-black">{points} PTS</span>
+        <div className={`${s.card} flex-1 py-6 flex items-center justify-center gap-4 bg-[#86EFAC] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-4 border-black`}>
+          <Trophy className="h-10 w-10 text-yellow-600" /> <span className="text-4xl font-black">{points} PTS</span>
         </div>
       </div>
-      <div className={`${s.card} ${isNeo ? "bg-[#FDA4AF]" : "bg-white"} text-center p-10`}>
-        <h2 className="text-4xl font-black uppercase mb-10 tracking-tighter">{lessonData.question}</h2>
-        <div className="grid gap-4">
+      <div className={`${s.card} ${isNeo ? "bg-[#FDA4AF]" : "bg-white"} text-center p-10 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}>
+        <h2 className="text-5xl font-black uppercase mb-12 tracking-tighter">{lessonData.question}</h2>
+        <div className="grid gap-6">
           {lessonData.options.map((opt: string) => (
-            <button key={opt} onClick={() => setSelectedAnswer(opt)} className={`p-6 border-4 border-black font-black text-2xl uppercase transition-all ${selectedAnswer === opt ? "bg-black text-white scale-105" : "bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"}`}>
+            <button key={opt} onClick={() => setSelectedAnswer(opt)} className={`p-8 border-4 border-black font-black text-3xl uppercase transition-all ${selectedAnswer === opt ? "bg-black text-white scale-105" : "bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1"}`}>
               {opt}
             </button>
           ))}
         </div>
-        {selectedAnswer && !showFeedback && <button className={`${s.btnPrimary} mt-10 h-20 text-3xl w-full`} onClick={handleCheckAnswer}>CHECK IT!</button>}
+        {selectedAnswer && !showFeedback && <button className={`${s.btnPrimary} mt-12 h-24 text-4xl w-full border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none bg-[#86EFAC]`} onClick={handleCheckAnswer}>CHECK IT!</button>}
         {showFeedback && (
-          <div className={`mt-10 p-8 border-4 border-black font-black uppercase flex flex-col items-center gap-4 ${isCorrect ? "bg-[#86EFAC]" : "bg-red-400"}`}>
-            <span className="text-4xl">{isCorrect ? "AMAZING!" : "TRY AGAIN!"}</span>
-            <button className={`${s.btnSecondary} bg-white`} onClick={() => { setShowFeedback(false); setSelectedAnswer(""); setTimer(30); }}>NEXT <ArrowRight /></button>
+          <div className={`mt-12 p-8 border-4 border-black font-black uppercase flex flex-col items-center gap-6 ${isCorrect ? "bg-[#86EFAC]" : "bg-[#FEF08A]"}`}>
+            <span className="text-5xl">{isCorrect ? `AMAZING! +${lessonData.reward} ⭐` : "TRY AGAIN!"}</span>
+            <button className={`${s.btnSecondary} bg-white text-2xl px-10 py-6 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none`} onClick={() => { setShowFeedback(false); setSelectedAnswer(""); setTimer(30); }}>NEXT <ArrowRight className="h-8 w-8" /></button>
           </div>
         )}
       </div>
@@ -129,30 +131,41 @@ const LearningMode = () => {
   );
 
   const renderAutismMode = () => (
-    <div className="grid md:grid-cols-2 gap-10">
-      <div className="space-y-4">
-        {lessonData.steps.map((step: any) => (
-          <div key={step.id} className={`${s.card} ${currentStep === step.id ? "bg-[#86EFAC]" : "bg-white opacity-50"} transition-all`}>
-            <h3 className="font-black uppercase text-blue-800">{step.title}</h3>
-            <p className="font-bold">{step.content}</p>
-          </div>
-        ))}
-        {currentStep < 3 && <button className={`${s.btnPrimary} w-full h-16`} onClick={() => setCurrentStep(prev => prev + 1)}>I FINISHED THIS STEP</button>}
+    <div className="space-y-8">
+      <div className="flex items-center gap-4 mb-6">
+        <div className="font-bold text-xl px-6 py-2 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          Step {Math.min(currentStep, lessonData.steps.length + 1)} of {lessonData.steps.length + 1}
+        </div>
       </div>
-      <AnimatePresence>
-        {currentStep === 3 && (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className={`${s.card} ${isNeo ? "bg-[#D8B4FE]" : "bg-white"}`}>
-            <h3 className="text-2xl font-black uppercase mb-8">{lessonData.question}</h3>
-            <div className="grid gap-4">
-              {lessonData.options.map((opt: string) => (
-                <button key={opt} onClick={() => setSelectedAnswer(opt)} className={`p-4 border-4 border-black font-black uppercase text-left ${selectedAnswer === opt ? "bg-black text-white" : "bg-white"}`}>{opt}</button>
-              ))}
+      <div className="grid md:grid-cols-2 gap-10">
+        <div className="space-y-6">
+          {lessonData.steps.map((step: any) => (
+            <div key={step.id} className={`p-6 border-4 border-black transition-all ${currentStep === step.id ? "bg-[#FEF08A] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] scale-105" : "bg-gray-50 opacity-60"}`}>
+              <h3 className="font-black uppercase text-xl mb-2">{step.title}</h3>
+              <p className="font-bold text-lg">{step.content}</p>
             </div>
-            <button className={`${s.btnPrimary} w-full mt-10`} disabled={!selectedAnswer} onClick={handleCheckAnswer}>CHECK ANSWER</button>
-            {showFeedback && <div className={`mt-6 p-4 border-4 border-black font-black text-center ${isCorrect ? "bg-[#86EFAC]" : "bg-red-400"}`}>{isCorrect ? "WELL DONE!" : "TRY AGAIN."}</div>}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          ))}
+          {currentStep <= lessonData.steps.length && (
+            <button className={`${s.btnPrimary} w-full h-20 text-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none bg-[#86EFAC]`} onClick={() => setCurrentStep(prev => prev + 1)}>
+              I FINISHED THIS STEP <CheckCircle2 className="ml-2 h-8 w-8" />
+            </button>
+          )}
+        </div>
+        <AnimatePresence>
+          {currentStep > lessonData.steps.length && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className={`p-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] ${isNeo ? "bg-[#D8B4FE]" : "bg-white"}`}>
+              <h3 className="text-3xl font-black uppercase mb-8 leading-snug">{lessonData.question}</h3>
+              <div className="grid gap-4">
+                {lessonData.options.map((opt: string) => (
+                  <button key={opt} onClick={() => setSelectedAnswer(opt)} className={`p-6 border-4 border-black font-black uppercase text-left text-xl transition-all ${selectedAnswer === opt ? "bg-black text-white" : "bg-white hover:bg-gray-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none"}`}>{opt}</button>
+                ))}
+              </div>
+              <button className={`${s.btnPrimary} w-full mt-10 h-16 text-xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`} disabled={!selectedAnswer} onClick={handleCheckAnswer}>CHECK ANSWER</button>
+              {showFeedback && <div className={`mt-6 p-6 border-4 border-black font-black text-2xl uppercase text-center ${isCorrect ? "bg-[#86EFAC]" : "bg-[#FDA4AF]"}`}>{isCorrect ? "WELL DONE! 🌟" : "TRY AGAIN."}</div>}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 
