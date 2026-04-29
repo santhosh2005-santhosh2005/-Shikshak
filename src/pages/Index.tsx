@@ -166,11 +166,13 @@ const Index = () => {
         <section className={`min-h-screen flex items-center pt-20 pb-12 px-4 ${isNeo ? "border-b-8 border-black bg-white" : ""}`}>
           <div className={`container mx-auto max-w-6xl transition-all duration-1000 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
             
-            <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-6 md:space-y-8">
-              <div className="flex flex-wrap justify-center gap-3">
-                <span className={s.tag}>NEURO-ADAPTIVE</span>
-                <span className={s.tagLight}>SHIKSHAK 2.0</span>
-              </div>
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              {/* Left Column: Text Content */}
+              <div className="flex flex-col items-start text-left space-y-6 md:space-y-10 z-10">
+                <div className="flex flex-wrap justify-start gap-3">
+                  <span className={s.tag}>NEURO-ADAPTIVE</span>
+                  <span className={s.tagLight}>SHIKSHAK 2.0</span>
+                </div>
 
               <AnimatedHeading delay={200} className={`${s.sectionTitle} text-4xl md:text-7xl lg:text-8xl`}>
                 LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
@@ -181,7 +183,7 @@ const Index = () => {
                 Experience a vibrant, accessible platform designed specifically to support unique learning styles.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 md:gap-8 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
                 <Link to="/tests" className={s.btnPrimary}>
                   START SCREENING <ArrowRight className="h-6 w-6" />
                 </Link>
@@ -190,6 +192,23 @@ const Index = () => {
                 </Link>
               </div>
             </div>
+
+            {/* Right Column: Video container */}
+            <div className="relative mt-8 lg:mt-0 w-full max-w-lg mx-auto lg:max-w-none lg:ml-auto">
+              <div className={`absolute top-4 -right-4 md:-right-8 w-full h-[90%] bg-[#FEF08A] rounded-[2rem] transform rotate-3 ${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" : "shadow-xl opacity-60"}`}></div>
+              <div className={`relative z-10 w-full overflow-hidden rounded-[2rem] bg-white transform -rotate-2 hover:rotate-0 transition-transform duration-500 ${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" : "border-4 border-white shadow-2xl"}`}>
+                <video 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline
+                  className="w-full h-[350px] md:h-[450px] lg:h-[550px] object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
+                >
+                  <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </div>
 
           </div>
         </section>

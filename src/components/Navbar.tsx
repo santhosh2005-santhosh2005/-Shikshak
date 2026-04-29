@@ -27,11 +27,13 @@ export const Navbar = () => {
 
   const navLinks = [
     { text: "Home", href: "/" },
-    { text: "About", href: "/about" },
-    { text: "Tests", href: "/tests" },
-    { text: "Support", href: "/support" },
+    { text: "Start Learning", href: "/tests" },
+    { text: "Improve", href: "/improve" },
+    { text: "AI Chat", href: "/ai-chat" },
     { text: "Dashboard", href: "/teacher-dashboard" },
-    { text: "Digest", href: "/parent-digest" },
+    { text: "Report", href: "/parent-digest" },
+    { text: "Support", href: "/support" },
+    { text: "About", href: "/about" },
   ];
 
   const isActive = (href: string) => location.pathname === href;

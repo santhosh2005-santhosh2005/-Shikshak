@@ -111,7 +111,7 @@ export const chatWithPDF = async (
   message: string,
   pdfText: string,
   chatHistory: ChatMessage[] = [],
-  provider: AIProvider = 'gemini'
+  provider: AIProvider = 'groq'
 ): Promise<string> => {
   try {
     const systemPrompt = pdfText 
@@ -138,24 +138,40 @@ You can get a free key at: https://aistudio.google.com/apikey
 Alternatively, switch to another provider like Groq if you have that configured.`;
       }
 
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-      
-      // Gemini requires the first message in history to be from 'user'.
-      // If our history starts with an assistant summary, we skip it for the API call.
-      const validHistory = chatHistory[0]?.role === 'assistant' ? chatHistory.slice(1) : chatHistory;
+      // Try multiple Gemini models in case one is deprecated
+      const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro'];
+      let lastError: any;
 
-      const historyMessages = validHistory.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
-      }));
+      for (const modelName of modelsToTry) {
+        try {
+          console.log(`Trying Gemini model: ${modelName}`);
+          const model = genAI.getGenerativeModel({ model: modelName });
+          
+          // Gemini requires the first message in history to be from 'user'.
+          const validHistory = chatHistory[0]?.role === 'assistant' ? chatHistory.slice(1) : chatHistory;
 
-      const chat = model.startChat({
-        history: historyMessages,
-      });
+          const historyMessages = validHistory.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+          }));
 
-      const result = await chat.sendMessage(`${systemPrompt}\n\nUSER QUESTION: ${message}`);
-      const response = await result.response;
-      return response.text();
+          const chat = model.startChat({
+            history: historyMessages,
+          });
+
+          const result = await chat.sendMessage(`${systemPrompt}\n\nUSER QUESTION: ${message}`);
+          const response = await result.response;
+          console.log(`✓ Successfully used Gemini model: ${modelName}`);
+          return response.text();
+        } catch (error: any) {
+          console.warn(`✗ Model ${modelName} failed:`, error.message);
+          lastError = error;
+          // Continue to next model
+        }
+      }
+
+      // If all models failed
+      throw lastError || new Error('All Gemini models failed');
     } else {
       const messages = [
         ...chatHistory.map(msg => ({ role: msg.role, content: msg.content })),
@@ -174,7 +190,7 @@ Alternatively, switch to another provider like Groq if you have that configured.
  */
 export const summarizePDF = async (
   pdfText: string,
-  provider: AIProvider = 'gemini'
+  provider: AIProvider = 'groq'
 ): Promise<string> => {
   const prompt = `Please provide a comprehensive summary of the following document:
 
@@ -189,10 +205,26 @@ Please include:
   try {
     if (provider === 'gemini') {
       if (!genAI) return '⚠️ Gemini API key missing or invalid. Please check your .env file or switch to another provider (like Groq) before uploading.';
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      
+      // Try multiple models
+      const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro'];
+      let lastError: any;
+
+      for (const modelName of modelsToTry) {
+        try {
+          console.log(`Trying Gemini model for summary: ${modelName}`);
+          const model = genAI.getGenerativeModel({ model: modelName });
+          const result = await model.generateContent(prompt);
+          const response = await result.response;
+          console.log(`✓ Successfully used Gemini model for summary: ${modelName}`);
+          return response.text();
+        } catch (error: any) {
+          console.warn(`✗ Model ${modelName} failed:`, error.message);
+          lastError = error;
+        }
+      }
+
+      throw lastError || new Error('All Gemini models failed');
     } else {
       return await callOpenAICompatibleAPI(provider, [{ role: 'user', content: prompt }], 'You are a helpful assistant that summarizes documents.');
     }
