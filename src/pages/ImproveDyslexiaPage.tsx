@@ -382,34 +382,42 @@ const ImproveDyslexiaPage = () => {
   const renderGame = () => {
     if (!activeGame) return null;
     return (
-      <div className="fixed inset-0 z-[60] bg-white flex flex-col">
-        <div className="p-6 border-b-4 border-black flex justify-between items-center bg-[#D8B4FE]">
-          <h2 className="text-3xl font-black uppercase tracking-tighter">{activeGame.replace("-", " ")}</h2>
-          <button onClick={() => setActiveGame(null)} className="w-12 h-12 border-4 border-black bg-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-0 active:translate-x-1 active:translate-y-1">
-            <ArrowLeft className="h-6 w-6" />
+      <motion.div 
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: "auto" }}
+        className="mt-12 mb-20"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-4">
+            <Sparkles className="h-8 w-8 text-primary" />
+            Featured Activity: {activeGame.replace("-", " ")}
+          </h2>
+          <button 
+            onClick={() => {
+              setActiveGame(null);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }} 
+            className={`${s.btnSecondary} py-2`}
+          >
+            <ArrowLeft className="mr-2" /> BACK TO MENU
           </button>
         </div>
-        <div className="flex-1 overflow-auto p-10 bg-grid flex items-center justify-center">
-          <div className="w-full max-w-2xl bg-white border-8 border-black p-10 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
-            {activeGame === "word-sort" && <WordSortingGame />}
-            {activeGame === "audio-dictation" && <AudioDictationGame />}
-            {activeGame === "flash-word" && <FlashWordGame />}
-            {activeGame === "letter-match" && <LetterMatchGame />}
-            {activeGame === "syllable-tap" && <SyllableTapGame />}
-            {activeGame === "sound-match" && <LetterSoundMatchGame />}
-            {activeGame === "focus-line" && <FocusLineGame />}
-            {/* Placeholder for other games */}
-            {!["word-sort", "audio-dictation", "flash-word", "letter-match", "syllable-tap", "sound-match", "focus-line"].includes(activeGame) && (
-              <div className="text-center py-20">
-                <Sparkles className="h-20 w-20 mx-auto mb-6 text-yellow-400" />
-                <h3 className="text-3xl font-black uppercase">Coming Soon!</h3>
-                <p className="font-bold">We are building this game right now.</p>
-                <button onClick={() => setActiveGame(null)} className={`${s.btnPrimary} mt-10`}>BACK TO MENU</button>
-              </div>
-            )}
-          </div>
+        <div className={`w-full bg-white border-[6px] border-black p-6 md:p-12 ${isNeo ? "shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]" : "shadow-xl"}`}>
+          {activeGame === "word-sort" && <WordSortingGame />}
+          {activeGame === "audio-dictation" && <AudioDictationGame />}
+          {activeGame === "flash-word" && <FlashWordGame />}
+          {activeGame === "letter-match" && <LetterMatchGame />}
+          {activeGame === "syllable-tap" && <SyllableTapGame />}
+          {activeGame === "sound-match" && <LetterSoundMatchGame />}
+          {activeGame === "focus-line" && <FocusLineGame />}
+          
+          {!["word-sort", "audio-dictation", "flash-word", "letter-match", "syllable-tap", "sound-match", "focus-line"].includes(activeGame) && (
+            <div className="text-center py-10">
+              <h3 className="text-2xl font-black uppercase">Coming Soon</h3>
+            </div>
+          )}
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -480,7 +488,17 @@ const ImproveDyslexiaPage = () => {
                 <h4 className="text-2xl font-black uppercase mb-2 tracking-tighter">{g.name}</h4>
                 <p className="font-bold opacity-70 text-sm">{g.desc}</p>
               </div>
-              <button onClick={() => setActiveGame(g.id as GameType)} className={`${s.btnPrimary} mt-8 w-full`}>PLAY GAME</button>
+              <button 
+                onClick={() => {
+                  setActiveGame(g.id as GameType);
+                  setTimeout(() => {
+                    document.getElementById('game-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }} 
+                className={`${s.btnPrimary} mt-8 w-full`}
+              >
+                PLAY GAME
+              </button>
             </motion.div>
           ))}
         </div>
@@ -521,14 +539,24 @@ const ImproveDyslexiaPage = () => {
                           <h2 className="text-4xl font-black uppercase mb-4">{l.id}</h2>
                           <p className="font-bold text-lg mb-8">{l.desc}</p>
                        </div>
-                       <button onClick={() => setCurrentLevel(l.id as Level)} className={s.btnPrimary} style={{ backgroundColor: l.color }}>EXPLORE {l.id} ACTIVITIES</button>
+                       <button onClick={() => {
+                         setCurrentLevel(l.id as Level);
+                         window.scrollTo({ top: 0, behavior: 'smooth' });
+                       }} className={s.btnPrimary} style={{ backgroundColor: l.color }}>EXPLORE {l.id} ACTIVITIES</button>
                     </div>
                   ))}
                </div>
             </div>
           )}
 
-          {currentLevel !== "home" && <LevelSection level={currentLevel as any} />}
+          {currentLevel !== "home" && (
+            <>
+              <LevelSection level={currentLevel as any} />
+              <div id="game-section">
+                {renderGame()}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </ScrollArea>
