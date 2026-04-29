@@ -251,9 +251,33 @@ const AIChatPage = () => {
                   </div>
                 ) : (
                   <div className="flex-1">
-                    <p className={`text-sm mb-3 ${isNeo ? "font-medium" : "text-gray-600"}`}>
-                      PDF uploaded! You can now:
-                    </p>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          setIsSummarizing(true);
+                          const summary = await summarizePDF(pdfText, provider);
+                          setMessages(prev => [
+                            ...prev,
+                            {
+                              role: "assistant",
+                              content: `📄 **New PDF Summary (${provider})**\n\n${summary}`,
+                            },
+                          ]);
+                          setIsSummarizing(false);
+                        }}
+                        disabled={isSummarizing}
+                        className={`w-full ${isNeo ? "border-4 border-black font-black uppercase" : ""}`}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Regenerate Summary
+                      </Button>
+                      
+                      <p className={`text-sm mb-3 ${isNeo ? "font-medium" : "text-gray-600"}`}>
+                        PDF uploaded! You can now:
+                      </p>
+                    </div>
                     <ul className={`space-y-2 text-sm ${isNeo ? "font-medium" : "text-gray-600"}`}>
                       <li className="flex items-center gap-2">
                         <Sparkles className="h-4 w-4" />
