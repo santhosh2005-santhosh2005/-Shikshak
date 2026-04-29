@@ -56,13 +56,6 @@ const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 
 const queryClient = new QueryClient();
 
 const LandingRedirect = () => {
-  const { user, session } = useAuth();
-  const isDemoMode = localStorage.getItem("shikshak_demo_mode") === "true";
-  
-  if (session || user || isDemoMode) {
-    return <Navigate to="/home" replace />;
-  }
-  
   return <PrismaLanding />;
 };
 
