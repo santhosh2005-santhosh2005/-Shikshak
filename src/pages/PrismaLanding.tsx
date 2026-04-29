@@ -89,27 +89,27 @@ const PrismaLanding = () => {
         </div>
       </section>
 
-      {/* SECTION 2: ABOUT */}
-      <section className="bg-black py-32 px-6 flex flex-col items-center">
-        <div className="bg-[#101010] w-full max-w-6xl rounded-[2.5rem] p-12 md:p-24 text-center border border-white/5">
-          <span className="text-primary text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-8 block">
+      {/* SECTION 2: ABOUT — WHITE */}
+      <section className="bg-white py-32 px-6 flex flex-col items-center">
+        <div className="bg-gray-50 w-full max-w-6xl rounded-[2.5rem] p-12 md:p-24 text-center border border-black/5">
+          <span className="text-black/40 text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-8 block font-bold">
             The Mission
           </span>
           
           <div className="mb-12">
             <WordsPullUpMultiStyle
               segments={[
-                { text: "We are Shikshak,", className: "font-normal" },
-                { text: " a neuro-adaptive platform.", className: "font-serif italic" },
-                { text: " We specialize in dyslexia screening, personalized learning, and AI-driven growth metrics.", className: "font-normal" }
+                { text: "We are Shikshak,", className: "font-normal text-black" },
+                { text: " a neuro-adaptive platform.", className: "font-serif italic text-black" },
+                { text: " We specialize in dyslexia screening, personalized learning, and AI-driven growth metrics.", className: "font-normal text-black" }
               ]}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-4xl mx-auto leading-[1.1] sm:leading-[1.0] text-primary"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-4xl mx-auto leading-[1.1] sm:leading-[1.0]"
             />
           </div>
 
           <ScrollRevealText
             text="Over the last year, we have built a bridge between education and technology. Our algorithms detect learning patterns in real-time, providing students with a calm, focused environment where they can thrive regardless of their starting point."
-            className="text-primary/80 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed"
+            className="text-black/70 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed"
           />
         </div>
       </section>
