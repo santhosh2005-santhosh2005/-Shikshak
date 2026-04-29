@@ -58,8 +58,9 @@ const PrismaLanding = () => {
 
           {/* Hero Content */}
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 lg:p-20 z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-              <div className="lg:col-span-8">
+            <div className="flex items-end justify-between">
+              {/* Big Title - Bottom Left */}
+              <div>
                 <WordsPullUp
                   text="Shikshak"
                   showAsterisk
@@ -67,15 +68,8 @@ const PrismaLanding = () => {
                   style={{ color: primaryColor }}
                 />
               </div>
-              <div className="lg:col-span-4 max-w-sm mb-[2vw]">
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-primary/70 text-sm sm:text-base md:text-lg leading-[1.2] mb-8"
-                >
-                  Shikshak is an intelligent learning ecosystem designed to identify and support unique learning patterns through advanced neuro-adaptive AI and empathetic design.
-                </motion.p>
+              {/* Button - Bottom Right */}
+              <div className="mb-[2vw] flex-shrink-0">
                 <Link to="/auth/role-selection">
                   <motion.button
                     initial={{ opacity: 0, y: 20 }}
