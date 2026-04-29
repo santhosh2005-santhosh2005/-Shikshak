@@ -32,15 +32,19 @@ const RoleSelection = () => {
       title: "Teacher",
       description: "Manage classes and track student performance with AI insights.",
       icon: User,
-      active: false,
-      color: "bg-slate-50 text-slate-400",
-      hoverColor: "",
+      active: true,
+      color: "bg-purple-50 text-purple-600",
+      hoverColor: "hover:border-purple-400",
     },
   ];
 
   const handleRoleClick = (roleId: string, isActive: boolean) => {
-    if (isActive && roleId === "student") {
-      navigate("/auth/signup");
+    if (isActive) {
+      if (roleId === "student") {
+        navigate("/auth/signup");
+      } else if (roleId === "teacher") {
+        navigate("/auth/teacher-login");
+      }
     }
   };
 
