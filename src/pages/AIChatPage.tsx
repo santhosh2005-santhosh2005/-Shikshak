@@ -7,8 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { extractTextFromPDF, getPDFInfo } from "@/lib/pdfExtractor";
-import { chatWithPDF, summarizePDF, ChatMessage } from "@/lib/aiChat";
+import { chatWithPDF, summarizePDF, ChatMessage, AIProvider } from "@/lib/aiChat";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Cpu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const AIChatPage = () => {
@@ -24,6 +32,7 @@ const AIChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSummarizing, setIsSummarizing] = useState(false);
+  const [provider, setProvider] = useState<AIProvider>("gemini");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -75,7 +84,7 @@ const AIChatPage = () => {
 
       // Auto-generate summary
       setIsSummarizing(true);
-      const summary = await summarizePDF(text);
+      const summary = await summarizePDF(text, provider);
       setMessages([
         {
           role: "assistant",
@@ -108,7 +117,7 @@ const AIChatPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await chatWithPDF(userMessage.content, pdfText, messages);
+      const response = await chatWithPDF(userMessage.content, pdfText, messages, provider);
       
       const assistantMessage: ChatMessage = {
         role: "assistant",
@@ -273,7 +282,25 @@ const AIChatPage = () => {
                 <MessageSquare className="h-5 w-5" />
                 <TTSText text="Chat">Chat</TTSText>
               </h2>
-              {messages.length > 0 && (
+              
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Cpu className="h-4 w-4 text-primary" />
+                  <Select value={provider} onValueChange={(val) => setProvider(val as AIProvider)}>
+                    <SelectTrigger className={`w-[140px] h-8 text-xs ${isNeo ? "border-2 border-black font-bold" : ""}`}>
+                      <SelectValue placeholder="Model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gemini">Gemini Pro</SelectItem>
+                      <SelectItem value="openai">OpenAI (GPT-3.5)</SelectItem>
+                      <SelectItem value="groq">Groq (Llama 3)</SelectItem>
+                      <SelectItem value="openrouter">OpenRouter</SelectItem>
+                      <SelectItem value="ollama">Ollama (Local)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {messages.length > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"

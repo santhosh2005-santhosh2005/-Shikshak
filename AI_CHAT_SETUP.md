@@ -17,7 +17,13 @@
 ```env
 VITE_SUPABASE_URL=https://your-project-url.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
-VITE_GEMINI_API_KEY=your-gemini-api-key-here
+
+# AI Providers API Keys
+VITE_GEMINI_API_KEY=your-gemini-api-key
+VITE_OPENAI_API_KEY=your-openai-api-key
+VITE_GROQ_API_KEY=your-groq-api-key
+VITE_OPENROUTER_API_KEY=your-openrouter-api-key
+VITE_OLLAMA_URL=http://localhost:11434
 ```
 
 3. Replace `your-gemini-api-key-here` with your actual API key
@@ -59,6 +65,17 @@ npm run dev
 ---
 
 ## 💡 Example Questions
+
+---
+
+## 🛠️ Multi-Provider Support
+
+You can now switch between multiple AI models:
+- **Gemini Pro**: (Default) Google's powerful multimodal model.
+- **OpenAI**: Requires `VITE_OPENAI_API_KEY`.
+- **Groq**: Ultra-fast inference. Requires `VITE_GROQ_API_KEY`.
+- **OpenRouter**: Access any model. Requires `VITE_OPENROUTER_API_KEY`.
+- **Ollama**: Run locally! Ensure Ollama is running and has the `llama3` model pulled (`ollama pull llama3`).
 
 - "What is the main topic of this document?"
 - "Summarize chapter 3"

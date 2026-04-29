@@ -29,6 +29,7 @@ export const Navbar = () => {
     { text: "Home", href: "/" },
     { text: "Start Learning", href: "/tests" },
     { text: "Progress", href: "/improve" },
+    { text: "AI Chat", href: "/ai-chat" },
     { text: "Dashboard", href: "/teacher-dashboard" },
     { text: "Report", href: "/parent-digest" },
     { text: "Support", href: "/support" },

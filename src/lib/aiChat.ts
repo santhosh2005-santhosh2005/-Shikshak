@@ -1,40 +1,116 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Initialize Gemini API
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
-const genAI = new GoogleGenerativeAI(API_KEY);
+// Types
+export type AIProvider = 'gemini' | 'openai' | 'groq' | 'openrouter' | 'ollama';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
+// API Keys & URLs from env
+const API_KEYS = {
+  gemini: import.meta.env.VITE_GEMINI_API_KEY || '',
+  openai: import.meta.env.VITE_OPENAI_API_KEY || '',
+  groq: import.meta.env.VITE_GROQ_API_KEY || '',
+  openrouter: import.meta.env.VITE_OPENROUTER_API_KEY || '',
+  ollama: import.meta.env.VITE_OLLAMA_URL || 'http://localhost:11434',
+};
+
+// Initialize Gemini
+const genAI = API_KEYS.gemini ? new GoogleGenerativeAI(API_KEYS.gemini) : null;
+
 /**
- * Send a message to Gemini AI with PDF context
- * @param message - User's question
- * @param pdfText - Extracted PDF text content
- * @param chatHistory - Previous chat messages
- * @returns Promise<string> - AI response
+ * Generic function for OpenAI-compatible APIs
+ */
+const callOpenAICompatibleAPI = async (
+  provider: AIProvider,
+  messages: any[],
+  systemPrompt: string
+): Promise<string> => {
+  let url = '';
+  let key = '';
+  let model = '';
+
+  switch (provider) {
+    case 'openai':
+      url = 'https://api.openai.com/v1/chat/completions';
+      key = API_KEYS.openai;
+      model = 'gpt-3.5-turbo';
+      break;
+    case 'groq':
+      url = 'https://api.groq.com/openai/v1/chat/completions';
+      key = API_KEYS.groq;
+      model = 'llama3-8b-8192';
+      break;
+    case 'openrouter':
+      url = 'https://openrouter.ai/api/v1/chat/completions';
+      key = API_KEYS.openrouter;
+      model = 'google/gemini-pro-1.5-exp:free'; // Default free model
+      break;
+    case 'ollama':
+      url = `${API_KEYS.ollama}/api/chat`;
+      model = 'llama3';
+      break;
+  }
+
+  if (provider !== 'ollama' && !key) {
+    throw new Error(`Missing API key for ${provider}`);
+  }
+
+  const payload = {
+    model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      ...messages
+    ],
+    stream: false,
+  };
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (key) {
+    headers['Authorization'] = `Bearer ${key}`;
+  }
+
+  // OpenRouter requires extra headers
+  if (provider === 'openrouter') {
+    headers['HTTP-Referer'] = window.location.origin;
+    headers['X-Title'] = 'Shikshak';
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || `API Error: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  
+  if (provider === 'ollama') {
+    return data.message.content;
+  }
+  
+  return data.choices[0].message.content;
+};
+
+/**
+ * Send a message to AI with PDF context
  */
 export const chatWithPDF = async (
   message: string,
   pdfText: string,
-  chatHistory: ChatMessage[] = []
+  chatHistory: ChatMessage[] = [],
+  provider: AIProvider = 'gemini'
 ): Promise<string> => {
   try {
-    if (!API_KEY) {
-      return '⚠️ Please add your Gemini API key to the .env file as VITE_GEMINI_API_KEY. You can get one free at: https://aistudio.google.com/apikey';
-    }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-
-    // Build conversation history
-    const historyMessages = chatHistory.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }]
-    }));
-
-    // Create system prompt with PDF context
     const systemPrompt = `You are an AI assistant helping users understand their PDF documents. 
 
 PDF CONTENT:
@@ -45,46 +121,47 @@ INSTRUCTIONS:
 - If the answer is not in the PDF, say so clearly
 - Provide clear, concise, and helpful responses
 - Use formatting (bullet points, numbered lists) when appropriate
-- If asked to summarize, provide a comprehensive overview
-- Stay focused on the PDF content
-- If the PDF content is cut off due to length, mention this limitation`;
+- Stay focused on the PDF content`;
 
-    // Start chat with history
-    const chat = model.startChat({
-      history: historyMessages.length > 0 ? historyMessages : [],
-    });
+    if (provider === 'gemini') {
+      if (!genAI) {
+        return '⚠️ Please add your Gemini API key to the .env file.';
+      }
 
-    // Send message with system context
-    const result = await chat.sendMessage(`${systemPrompt}\n\nUSER QUESTION: ${message}`);
-    const response = await result.response;
-    const text = response.text();
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const historyMessages = chatHistory.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      }));
 
-    return text;
-  } catch (error: any) {
-    console.error('Error chatting with AI:', error);
-    
-    if (error.message?.includes('API_KEY')) {
-      return '⚠️ Invalid API key. Please check your Gemini API key configuration.';
+      const chat = model.startChat({
+        history: historyMessages,
+      });
+
+      const result = await chat.sendMessage(`${systemPrompt}\n\nUSER QUESTION: ${message}`);
+      const response = await result.response;
+      return response.text();
+    } else {
+      const messages = [
+        ...chatHistory.map(msg => ({ role: msg.role, content: msg.content })),
+        { role: 'user', content: message }
+      ];
+      return await callOpenAICompatibleAPI(provider, messages, systemPrompt);
     }
-    
-    return '❌ Sorry, I encountered an error. Please try again.';
+  } catch (error: any) {
+    console.error(`Error with ${provider}:`, error);
+    return `❌ Error: ${error.message || 'Something went wrong.'}`;
   }
 };
 
 /**
  * Generate a summary of the PDF
- * @param pdfText - Extracted PDF text
- * @returns Promise<string> - PDF summary
  */
-export const summarizePDF = async (pdfText: string): Promise<string> => {
-  try {
-    if (!API_KEY) {
-      return '⚠️ Please add your Gemini API key to use this feature.';
-    }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-
-    const prompt = `Please provide a comprehensive summary of the following document:
+export const summarizePDF = async (
+  pdfText: string,
+  provider: AIProvider = 'gemini'
+): Promise<string> => {
+  const prompt = `Please provide a comprehensive summary of the following document:
 
 ${pdfText.substring(0, 15000)}
 
@@ -94,11 +171,18 @@ Please include:
 3. Important details
 4. Conclusion (if applicable)`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
-  } catch (error) {
-    console.error('Error summarizing PDF:', error);
-    return '❌ Failed to generate summary. Please try again.';
+  try {
+    if (provider === 'gemini') {
+      if (!genAI) return '⚠️ Gemini API key missing.';
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } else {
+      return await callOpenAICompatibleAPI(provider, [{ role: 'user', content: prompt }], 'You are a helpful assistant that summarizes documents.');
+    }
+  } catch (error: any) {
+    console.error(`Error summarizing with ${provider}:`, error);
+    return `❌ Summary Error: ${error.message}`;
   }
 };
