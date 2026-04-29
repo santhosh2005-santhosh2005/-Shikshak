@@ -44,12 +44,12 @@ const callOpenAICompatibleAPI = async (
     case 'groq':
       url = 'https://api.groq.com/openai/v1/chat/completions';
       key = API_KEYS.groq;
-      model = 'llama3-8b-8192';
+      model = 'llama-3.3-70b-versatile';
       break;
     case 'openrouter':
       url = 'https://openrouter.ai/api/v1/chat/completions';
       key = API_KEYS.openrouter;
-      model = 'google/gemini-pro-1.5-exp:free'; // Default free model
+      model = 'meta-llama/llama-3.1-8b-instruct:free'; // Free tier model
       break;
     case 'ollama':
       url = `${API_KEYS.ollama}/api/chat`;
@@ -135,8 +135,13 @@ You can get a free key at: https://aistudio.google.com/apikey
 Alternatively, switch to another provider like Groq if you have that configured.`;
       }
 
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-      const historyMessages = chatHistory.map(msg => ({
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      
+      // Gemini requires the first message in history to be from 'user'.
+      // If our history starts with an assistant summary, we skip it for the API call.
+      const validHistory = chatHistory[0]?.role === 'assistant' ? chatHistory.slice(1) : chatHistory;
+
+      const historyMessages = validHistory.map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
         parts: [{ text: msg.content }]
       }));
@@ -181,7 +186,7 @@ Please include:
   try {
     if (provider === 'gemini') {
       if (!genAI) return '⚠️ Gemini API key missing or invalid. Please check your .env file or switch to another provider (like Groq) before uploading.';
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       return response.text();

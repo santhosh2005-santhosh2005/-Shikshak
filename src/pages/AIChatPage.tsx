@@ -32,7 +32,7 @@ const AIChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSummarizing, setIsSummarizing] = useState(false);
-  const [provider, setProvider] = useState<AIProvider>("gemini");
+  const [provider, setProvider] = useState<AIProvider>("groq");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

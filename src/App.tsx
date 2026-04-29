@@ -28,12 +28,24 @@ import NotFound from "./pages/NotFound";
 import SupportResourcesPage from "./pages/SupportResourcesPage";
 import ImproveDyslexiaPage from "./pages/ImproveDyslexiaPage";
 import AIChatPage from "./pages/AIChatPage";
+import RoleSelection from "./pages/auth/RoleSelection";
+import StudentSignup from "./pages/auth/StudentSignup";
+import StudentLogin from "./pages/auth/StudentLogin";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import { 
   AccessibilityProvider, 
   AccessibilitySettings
 } from "./components/AccessibilitySettings";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { Navigate } from "react-router-dom";
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, session } = useAuth();
+  if (!session && !user) {
+    return <Navigate to="/auth/role-selection" replace />;
+  }
+  return <>{children}</>;
+};
 
 const queryClient = new QueryClient();
 
@@ -50,27 +62,37 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
-            <Route path="/tests" element={<Tests />} />
-            <Route path="/reading-test" element={<ReadingTest />} />
-            <Route path="/phonological-test" element={<PhonologicalTest />} />
-            <Route path="/memory-test" element={<MemoryTest />} />
-            <Route path="/sequencing-test" element={<SequencingTest />} />
-            <Route path="/spelling-test" element={<SpellingTest />} />
-            <Route path="/reading-test-6-9" element={<ReadingTest6to9 />} />
-            <Route path="/phonological-test-6-9" element={<PhonologicalTest6to9 />} />
-            <Route path="/memory-test-6-9" element={<MemoryTest6to9 />} />
-            <Route path="/sequencing-test-6-9" element={<SequencingTest6to9 />} />
-            <Route path="/reading-test-9-12" element={<ReadingTest9to12 />} />
-            <Route path="/phonological-test-9-12" element={<PhonologicalTest9to12 />} />
-            <Route path="/memory-test-9-12" element={<MemoryTest9to12 />} />
-            <Route path="/sequencing-test-9-12" element={<SequencingTest9to12 />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/learning-mode" element={<LearningMode />} />
+            
+            {/* Auth Routes */}
+            <Route path="/auth/role-selection" element={<RoleSelection />} />
+            <Route path="/auth/signup" element={<StudentSignup />} />
+            <Route path="/auth/login" element={<StudentLogin />} />
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+
+            {/* Protected Student Routes */}
+            <Route path="/tests" element={<ProtectedRoute><Tests /></ProtectedRoute>} />
+            <Route path="/reading-test" element={<ProtectedRoute><ReadingTest /></ProtectedRoute>} />
+            <Route path="/phonological-test" element={<ProtectedRoute><PhonologicalTest /></ProtectedRoute>} />
+            <Route path="/memory-test" element={<ProtectedRoute><MemoryTest /></ProtectedRoute>} />
+            <Route path="/sequencing-test" element={<ProtectedRoute><SequencingTest /></ProtectedRoute>} />
+            <Route path="/spelling-test" element={<ProtectedRoute><SpellingTest /></ProtectedRoute>} />
+            <Route path="/reading-test-6-9" element={<ProtectedRoute><ReadingTest6to9 /></ProtectedRoute>} />
+            <Route path="/phonological-test-6-9" element={<ProtectedRoute><PhonologicalTest6to9 /></ProtectedRoute>} />
+            <Route path="/memory-test-6-9" element={<ProtectedRoute><MemoryTest6to9 /></ProtectedRoute>} />
+            <Route path="/sequencing-test-6-9" element={<ProtectedRoute><SequencingTest6to9 /></ProtectedRoute>} />
+            <Route path="/reading-test-9-12" element={<ProtectedRoute><ReadingTest9to12 /></ProtectedRoute>} />
+            <Route path="/phonological-test-9-12" element={<ProtectedRoute><PhonologicalTest9to12 /></ProtectedRoute>} />
+            <Route path="/memory-test-9-12" element={<ProtectedRoute><MemoryTest9to12 /></ProtectedRoute>} />
+            <Route path="/sequencing-test-9-12" element={<ProtectedRoute><SequencingTest9to12 /></ProtectedRoute>} />
+            <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+            <Route path="/learning-mode" element={<ProtectedRoute><LearningMode /></ProtectedRoute>} />
+            <Route path="/support" element={<ProtectedRoute><SupportResourcesPage /></ProtectedRoute>} />
+            <Route path="/improve" element={<ProtectedRoute><ImproveDyslexiaPage /></ProtectedRoute>} />
+            <Route path="/ai-chat" element={<ProtectedRoute><AIChatPage /></ProtectedRoute>} />
+
             <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
             <Route path="/parent-digest" element={<ParentDigest />} />
-            <Route path="/support" element={<SupportResourcesPage />} />
-            <Route path="/improve" element={<ImproveDyslexiaPage />} />
-            <Route path="/ai-chat" element={<AIChatPage />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
