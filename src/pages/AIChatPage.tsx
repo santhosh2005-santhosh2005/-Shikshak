@@ -310,7 +310,8 @@ const AIChatPage = () => {
                   <Trash2 className="h-4 w-4 mr-1" />
                   Clear
                 </Button>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Messages */}
