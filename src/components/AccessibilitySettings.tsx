@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Language } from "@/lib/translations";
 
 type AccessibilitySettings = {
   dyslexicFont: "none" | "opendyslexic" | "comic-sans" | "lexend" | "atkinson";
@@ -31,7 +30,6 @@ type AccessibilitySettings = {
   textToSpeech: boolean;
   boldText: boolean;
   uiTheme: "calm" | "neo";
-  language: Language;
 };
 
 const defaultSettings: AccessibilitySettings = {
@@ -44,7 +42,6 @@ const defaultSettings: AccessibilitySettings = {
   textToSpeech: false,
   boldText: false,
   uiTheme: "calm",
-  language: "en",
 };
 
 const fontOptions = [
@@ -385,25 +382,6 @@ export const AccessibilitySettings = ({ showFloatingButton = true }: { showFloat
                     Neo-Brutalism
                   </ToggleGroupItem>
                 </ToggleGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Language / ಭಾಷೆ / மொழி</Label>
-                <Select
-                  value={settings.language}
-                  onValueChange={(value) =>
-                    updateSettings({ language: value as Language })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">🇬🇧 English</SelectItem>
-                    <SelectItem value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</SelectItem>
-                    <SelectItem value="ta">🇮🇳 தமிழ் (Tamil)</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
 
               <div className="space-y-4">

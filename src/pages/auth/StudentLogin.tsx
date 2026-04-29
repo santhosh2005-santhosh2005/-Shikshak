@@ -34,7 +34,7 @@ const StudentLogin = () => {
       }
 
       toast.success("Welcome back to Shikshak!");
-      navigate("/tests"); // Redirect to existing dashboard
+      navigate("/home"); // Redirect to student home dashboard
     } catch (error: any) {
       toast.error(error.message || "Invalid login credentials");
     } finally {

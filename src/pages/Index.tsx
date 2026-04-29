@@ -5,7 +5,6 @@ import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { Navbar } from "@/components/Navbar";
 import { useAccessibility } from "@/components/AccessibilitySettings";
 import { TTSText, TTSBanner } from "@/components/TTSText";
-import { useTranslation } from "@/hooks/useTranslation";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -139,7 +138,6 @@ const StatCard = ({ icon: Icon, number, label, index = 0 }: { icon: any; number:
 const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const { settings } = useAccessibility();
-  const { t } = useTranslation();
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
 
@@ -174,35 +172,35 @@ const Index = () => {
             {/* Left Column: Text Content */}
             <div className="flex flex-col items-start text-left space-y-6 md:space-y-8 z-10">
               <div className="flex flex-wrap justify-start gap-3">
-                <TTSText text={t.home.tag1}>
-                  <span className={s.tag}>{t.home.tag1}</span>
+                <TTSText text="Neuro-Adaptive">
+                  <span className={s.tag}>NEURO-ADAPTIVE</span>
                 </TTSText>
-                <TTSText text={t.home.tag2}>
-                  <span className={s.tagLight}>{t.home.tag2}</span>
+                <TTSText text="Shikshak 2.0">
+                  <span className={s.tagLight}>SHIKSHAK 2.0</span>
                 </TTSText>
               </div>
 
               <AnimatedHeading delay={200} className={`${s.sectionTitle} text-5xl md:text-6xl lg:text-[5rem] xl:text-[6rem] leading-[1.1] md:leading-[1.05]`}>
-                <TTSText text={`${t.home.heroTitle1} ${t.home.heroTitle2} ${t.home.heroTitle3}`}>
-                  {t.home.heroTitle1}<br />
-                  {t.home.heroTitle2} <br />
-                  <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4 mt-2 inline-block" : ""}>{t.home.heroTitle3}</span><br />
+                <TTSText text="Personalized Learning for Every Child.">
+                  PERSONALIZED<br />
+                  LEARNING <br />
+                  <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4 mt-2 inline-block" : ""}>FOR EVERY</span><br />
                   <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>CHILD.</span>
                 </TTSText>
               </AnimatedHeading>
               
               <p className={`text-lg md:text-xl max-w-lg leading-relaxed ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
-                <TTSText text={t.home.heroSubtitle}>
-                  {t.home.heroSubtitle}
+                <TTSText text="We understand how your child learns and adapt education to match.">
+                  We understand how your child learns and adapt education to match.
                 </TTSText>
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
                 <Link to="/tests" className={s.btnPrimary}>
-                  {t.home.startScreening} <ArrowRight className="h-6 w-6" />
+                  START SCREENING <ArrowRight className="h-6 w-6" />
                 </Link>
                 <Link to="/about" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
-                  {t.home.ourMission}
+                  OUR MISSION
                 </Link>
               </div>
             </div>
@@ -242,15 +240,15 @@ const Index = () => {
       <section className={`py-16 px-4 ${isNeo ? "border-b-8 border-black bg-[#D8B4FE]" : "bg-purple-50 border-b border-gray-200"}`}>
         <div className="container mx-auto max-w-4xl text-center space-y-8">
           <h2 className={`${s.sectionTitle} text-4xl md:text-6xl flex items-center justify-center gap-4`}>
-            {t.home.letLearn}
+            Let’s Learn Your Way 🚀
           </h2>
-          <p className={s.textBase}>{t.home.letLearnDesc}</p>
+          <p className={s.textBase}>We adapt learning based on how you understand best.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link to="/tests" className={s.btnPrimary}>
-              {t.nav.startLearning} <ArrowRight className="h-5 w-5" />
+              START LEARNING <ArrowRight className="h-5 w-5" />
             </Link>
             <Link to="/learning" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
-              {t.home.continueSession}
+              CONTINUE SESSION
             </Link>
           </div>
         </div>
@@ -260,38 +258,38 @@ const Index = () => {
       <section className={`min-h-screen flex flex-col justify-center py-20 px-4 border-y ${isNeo ? "border-y-8 border-black bg-[#FDA4AF]" : "border-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--section-bg)' } : {}}>
         <div className="container mx-auto max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16 space-y-4">
-            <TTSText text={t.home.researchBacked}>
-              <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>{t.home.researchBacked}</span>
+            <TTSText text="Research-Backed">
+              <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>RESEARCH-BACKED</span>
             </TTSText>
             <h2 className={s.sectionTitle}>
-              <TTSText text={t.home.builtOnScience}>{t.home.builtOnScience}</TTSText>
+              <TTSText text="Built On Science.">BUILT ON SCIENCE.</TTSText>
             </h2>
             <p className={s.textMuted}>
-              <TTSText text={t.home.scienceDescription}>
-                {t.home.scienceDescription}
+              <TTSText text="We combine cognitive science with modern, inclusive technology to create screening tools that don't overwhelm.">
+                We combine cognitive science with modern, inclusive technology to create screening tools that don't overwhelm.
               </TTSText>
             </p>
           </div>
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-12">
-            <StatCard icon={Brain} number="2+" label={t.home.years} index={0} />
-            <StatCard icon={BookOpen} number="90%" label={t.home.accuracy} index={1} />
-            <StatCard icon={CheckCircle} number="1.2M+" label={t.home.users} index={2} />
-            <StatCard icon={Clock} number="10m" label={t.home.quick} index={3} />
+            <StatCard icon={Brain} number="2+" label="Years" index={0} />
+            <StatCard icon={BookOpen} number="90%" label="Accuracy" index={1} />
+            <StatCard icon={CheckCircle} number="1.2M+" label="Users" index={2} />
+            <StatCard icon={Clock} number="10m" label="Quick" index={3} />
           </div>
 
           <div className={`${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-[#D8B4FE]" : "rounded-3xl shadow-sm border border-gray-200 bg-white"} p-6 md:p-10 flex flex-col md:flex-row justify-around items-center gap-6 divide-y md:divide-y-0 md:divide-x ${isNeo ? "divide-black divide-y-4 md:divide-x-8" : "divide-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
             <div className="text-center px-4 w-full">
               <div className="text-3xl md:text-5xl font-black text-black mb-1">1 in 10</div>
-              <div className="font-black uppercase tracking-wider text-xs md:text-sm">{t.home.signsOfDyslexia}</div>
+              <div className="font-black uppercase tracking-wider text-xs md:text-sm">Signs of Dyslexia</div>
             </div>
             <div className="text-center px-4 w-full pt-4 md:pt-0">
               <div className="text-3xl md:text-5xl font-black text-black mb-1">80%</div>
-              <div className="font-black uppercase tracking-wider text-xs md:text-sm">{t.home.undiagnosed}</div>
+              <div className="font-black uppercase tracking-wider text-xs md:text-sm">Undiagnosed</div>
             </div>
             <div className="text-center px-4 w-full pt-4 md:pt-0">
               <div className="text-3xl md:text-5xl font-black text-black mb-1">30 min</div>
-              <div className="font-black uppercase tracking-wider text-xs md:text-sm">{t.home.fastResult}</div>
+              <div className="font-black uppercase tracking-wider text-xs md:text-sm">Fast Result</div>
             </div>
           </div>
         </div>
@@ -302,28 +300,28 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
             <div className="lg:w-1/3 space-y-6 md:space-y-8">
-              <TTSText text={t.home.ourMissionTitle}>
-                <span className={s.tag}>{t.home.ourMissionTitle}</span>
+              <TTSText text="Our Mission">
+                <span className={s.tag}>OUR MISSION</span>
               </TTSText>
               <h2 className={s.sectionTitle}>
-                <TTSText text={t.home.empoweringMinds}>{t.home.empoweringMinds}</TTSText>
+                <TTSText text="Empowering Every Mind.">EMPOWERING EVERY MIND.</TTSText>
               </h2>
               <p className={s.textBase}>
-                <TTSText text={t.home.missionDescription}>
-                  {t.home.missionDescription}
+                <TTSText text="We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.">
+                  We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.
                 </TTSText>
               </p>
               <div className="pt-2">
                 <Link to="/about" className={`text-black font-black text-xl md:text-2xl inline-flex items-center gap-2 hover:gap-6 transition-all border-b-8 ${isNeo ? "border-black bg-[#FEF08A] px-4" : "border-gray-300 pb-1 hover:border-black"}`}>
-                  {t.home.readFullStory} <ArrowRight className="h-6 w-6" />
+                  READ FULL STORY <ArrowRight className="h-6 w-6" />
                 </Link>
               </div>
             </div>
             
             <div className="lg:w-2/3 grid sm:grid-cols-2 gap-4 md:gap-8">
-              <FeatureCard icon={Heart} title={t.home.features.earlyDetection} description={t.home.features.earlyDetectionDesc} index={0} />
-              <FeatureCard icon={Users} title={t.nav.support} description={t.home.features.personalizedDesc} index={1} />
-              <FeatureCard icon={Building} title={t.home.features.educator} description={t.home.features.educatorDesc} index={2} />
+              <FeatureCard icon={Heart} title="Early Detection" description="Identify signs early when intervention works best." index={0} />
+              <FeatureCard icon={Users} title="Community" description="A supportive space for unique learners." index={1} />
+              <FeatureCard icon={Building} title="Growth" description="Continuous research for better learning." index={2} />
               <div className={`${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-[#86EFAC]" : "rounded-3xl border border-gray-200 shadow-sm bg-white"} p-6 md:p-8 text-black flex flex-col justify-between hover:translate-x-2 transition-all`}>
                 <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
                   <Globe className="h-6 w-6 text-black" />
@@ -342,16 +340,16 @@ const Index = () => {
       <section className={`min-h-screen flex items-center py-20 px-4 border-y ${isNeo ? "border-y-8 border-black bg-[#FDBA74]" : "border-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--section-bg)' } : {}}>
         <div className="container mx-auto max-w-6xl">
           <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16 space-y-4">
-            <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>{t.home.testimonials.title}</span>
+            <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>TESTIMONIALS</span>
             <h2 className={s.sectionTitle}>REAL STORIES.</h2>
             <p className={s.textMuted}>
               Hear from students who found a better way to learn.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 md:gap-10">
-            <TestimonialCard quote={t.home.testimonials.quote1} author={t.home.testimonials.author1} role="Student" index={0} />
-            <TestimonialCard quote={t.home.testimonials.quote2} author={t.home.testimonials.author2} role="Parent" index={1} />
-            <TestimonialCard quote={t.home.testimonials.quote3} author={t.home.testimonials.author3} role="Student" index={2} />
+            <TestimonialCard quote="Understanding my style made everything easier. Stress-free design." author="santhosh" role="Student" index={0} />
+            <TestimonialCard quote="A safe, supportive environment for my daughter." author="harshvardan" role="Parent" index={1} />
+            <TestimonialCard quote="Finally feel understood without the fatigue." author="bhuvi" role="Student" index={2} />
           </div>
         </div>
       </section>
@@ -363,8 +361,8 @@ const Index = () => {
             <div className="grid md:grid-cols-5 h-full">
               <div className={`md:col-span-2 p-10 md:p-12 flex flex-col justify-between border-r ${isNeo ? "border-r-8 border-black bg-[#86EFAC]" : "border-gray-200 bg-gray-50"}`}>
                 <div>
-                  <h2 className={`text-3xl font-black text-black mb-6 uppercase tracking-tighter`}>{t.home.contact.title}</h2>
-                  <p className={`text-lg mb-8 md:mb-12 font-black uppercase`}>{t.home.contact.subtitle}</p>
+                  <h2 className={`text-3xl font-black text-black mb-6 uppercase tracking-tighter`}>CONTACT US.</h2>
+                  <p className={`text-lg mb-8 md:mb-12 font-black uppercase`}>Reach out anytime.</p>
                   <div className="space-y-6 md:space-y-8">
                     <div className="flex items-center gap-4 md:gap-6">
                       <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center flex-shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>

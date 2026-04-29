@@ -113,7 +113,7 @@ const StudentSignup = () => {
 
         if (authData.session) {
           toast.success("Account created successfully!");
-          navigate("/tests");
+          navigate("/home");
         } else {
           toast.success("Signup successful! Please check your email for a confirmation link.");
           navigate("/auth/login");
@@ -130,7 +130,7 @@ const StudentSignup = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/tests`
+        redirectTo: `${window.location.origin}/home`
       }
     });
     if (error) toast.error(error.message);
