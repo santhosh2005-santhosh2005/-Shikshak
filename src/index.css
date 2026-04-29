@@ -1,0 +1,151 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 98%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 252 87% 59%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 266 87% 92%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 252 87% 95%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 252 87% 59%;
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 6.5%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 8.5%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 8.5%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 252 87% 59%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 266 87% 28%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 252 87% 20%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 252 87% 59%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/20;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+  
+  /* Accessibility styles */
+  .large-text {
+    font-size: 1.25rem !important;
+  }
+  
+  .large-text h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  .large-text h2 {
+    font-size: 2rem !important;
+  }
+  
+  .large-text h3 {
+    font-size: 1.75rem !important;
+  }
+  
+  .increased-line-spacing {
+    line-height: 2 !important;
+  }
+  
+  /* Background themes */
+  .bg-sepia {
+    background-color: #fcefc7 !important;
+  }
+  
+  .bg-soft-blue {
+    background-color: #d3e4fd !important;
+  }
+  
+  .bg-soft-gray {
+    background-color: #f1f0fb !important;
+  }
+}
+
+@layer utilities {
+  .glow {
+    @apply shadow-[0_0_15px_rgba(var(--primary-rgb)/0.5)] transition-all;
+  }
+
+  .hover-glow:hover {
+    @apply glow;
+  }
+
+  .glass {
+    @apply bg-background/80 backdrop-blur-sm border border-border/50 shadow-sm;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:shadow-primary/10 cursor-pointer;
+  }
+
+  .bg-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  }
+
+  .dark .bg-grid {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+  
+  .shimmer {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:animate-shimmer;
+  }
+}
