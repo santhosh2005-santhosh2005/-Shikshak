@@ -4,6 +4,7 @@ import { ArrowRight, Globe, Users, Mail, Phone, Heart, Building, Send, Brain, Bo
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { Navbar } from "@/components/Navbar";
 import { useAccessibility } from "@/components/AccessibilitySettings";
+import { TTSText, TTSBanner } from "@/components/TTSText";
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -161,24 +162,35 @@ const Index = () => {
     <ScrollArea className="h-screen" style={!isNeo ? { backgroundColor: 'var(--app-bg)' } : { backgroundColor: '#ffffff' }}>
       <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} text-black selection:bg-[#FEF08A] selection:text-black`}>
         <Navbar />
+        
+        {/* TTS Banner */}
+        <TTSBanner />
 
         {/* ── HERO PAGE ─────────────────────────────────── */}
-        <section className={`min-h-screen flex items-center pt-20 pb-12 px-4 ${isNeo ? "border-b-8 border-black bg-white" : ""}`}>
+        <section className={`min-h-screen flex items-center ${settings.textToSpeech ? 'pt-36' : 'pt-20'} pb-12 px-4 ${isNeo ? "border-b-8 border-black bg-white" : ""}`}>
           <div className={`container mx-auto max-w-6xl transition-all duration-1000 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
             
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-6 md:space-y-8">
               <div className="flex flex-wrap justify-center gap-3">
-                <span className={s.tag}>NEURO-ADAPTIVE</span>
-                <span className={s.tagLight}>SHIKSHAK 2.0</span>
+                <TTSText text="Neuro-Adaptive">
+                  <span className={s.tag}>NEURO-ADAPTIVE</span>
+                </TTSText>
+                <TTSText text="Shikshak 2.0">
+                  <span className={s.tagLight}>SHIKSHAK 2.0</span>
+                </TTSText>
               </div>
 
               <AnimatedHeading delay={200} className={`${s.sectionTitle} text-4xl md:text-7xl lg:text-8xl`}>
-                LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
-                <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>GROW WITHOUT FRICTION.</span>
+                <TTSText text="Learn Without Limits. Grow Without Friction.">
+                  LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
+                  <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>GROW WITHOUT FRICTION.</span>
+                </TTSText>
               </AnimatedHeading>
               
               <p className={`text-lg md:text-2xl max-w-2xl leading-tight ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
-                Experience a vibrant, accessible platform designed specifically to support unique learning styles.
+                <TTSText text="Experience a vibrant, accessible platform designed specifically to support unique learning styles.">
+                  Experience a vibrant, accessible platform designed specifically to support unique learning styles.
+                </TTSText>
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 md:gap-8 pt-4">
@@ -198,10 +210,16 @@ const Index = () => {
         <section className={`min-h-screen flex flex-col justify-center py-20 px-4 border-y ${isNeo ? "border-y-8 border-black bg-[#FDA4AF]" : "border-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--section-bg)' } : {}}>
           <div className="container mx-auto max-w-6xl">
             <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16 space-y-4">
-              <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>RESEARCH-BACKED</span>
-              <h2 className={s.sectionTitle}>BUILT ON SCIENCE.</h2>
+              <TTSText text="Research-Backed">
+                <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>RESEARCH-BACKED</span>
+              </TTSText>
+              <h2 className={s.sectionTitle}>
+                <TTSText text="Built On Science.">BUILT ON SCIENCE.</TTSText>
+              </h2>
               <p className={s.textMuted}>
-                We combine cognitive science with modern, inclusive technology to create screening tools that don't overwhelm.
+                <TTSText text="We combine cognitive science with modern, inclusive technology to create screening tools that don't overwhelm.">
+                  We combine cognitive science with modern, inclusive technology to create screening tools that don't overwhelm.
+                </TTSText>
               </p>
             </div>
             
@@ -234,10 +252,16 @@ const Index = () => {
           <div className="container mx-auto max-w-6xl">
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
               <div className="lg:w-1/3 space-y-6 md:space-y-8">
-                <span className={s.tag}>OUR MISSION</span>
-                <h2 className={s.sectionTitle}>EMPOWERING EVERY MIND.</h2>
+                <TTSText text="Our Mission">
+                  <span className={s.tag}>OUR MISSION</span>
+                </TTSText>
+                <h2 className={s.sectionTitle}>
+                  <TTSText text="Empowering Every Mind.">EMPOWERING EVERY MIND.</TTSText>
+                </h2>
                 <p className={s.textBase}>
-                  We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.
+                  <TTSText text="We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.">
+                    We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.
+                  </TTSText>
                 </p>
                 <div className="pt-2">
                   <Link to="/about" className={`text-black font-black text-xl md:text-2xl inline-flex items-center gap-2 hover:gap-6 transition-all border-b-8 ${isNeo ? "border-black bg-[#FEF08A] px-4" : "border-gray-300 pb-1 hover:border-black"}`}>
@@ -275,9 +299,9 @@ const Index = () => {
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6 md:gap-10">
-              <TestimonialCard quote="Understanding my style made everything easier. Stress-free design." author="Abhishek A R." role="Student" index={0} />
-              <TestimonialCard quote="A safe, supportive environment for my daughter." author="Sheetal Kumari." role="Parent" index={1} />
-              <TestimonialCard quote="Finally feel understood without the fatigue." author="Amay Verma" role="Student" index={2} />
+              <TestimonialCard quote="Understanding my style made everything easier. Stress-free design." author="santhosh" role="Student" index={0} />
+              <TestimonialCard quote="A safe, supportive environment for my daughter." author="harshvardan" role="Parent" index={1} />
+              <TestimonialCard quote="Finally feel understood without the fatigue." author="bhuvi" role="Student" index={2} />
             </div>
           </div>
         </section>

@@ -18,13 +18,14 @@ import {
   Sparkles,
   Search,
   BookOpen,
-  History
+  History,
+  ArrowRight,
+  X
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 
 type Level = "home" | "mild" | "moderate" | "severe";
-type GameType = "word-sort" | "flash-word" | "letter-match" | "phoneme-builder" | "audio-dictation" | "syllable-tap" | "sound-match" | "focus-line";
+type GameType = "word-sort" | "flash-word" | "letter-match" | "phoneme-builder" | "audio-dictation" | "syllable-tap" | "sound-match" | "focus-line" | "word-trace";
 
 const ImproveDyslexiaPage = () => {
   const [currentLevel, setCurrentLevel] = useState<Level>("home");
@@ -40,6 +41,26 @@ const ImproveDyslexiaPage = () => {
       utterance.rate = 0.8;
       speechSynthesis.speak(utterance);
     }
+  };
+
+  // Clickable TTS text wrapper component
+  const TTSText = ({ text, children, className = "" }: { text: string; children: React.ReactNode; className?: string }) => {
+    if (!settings.textToSpeech) {
+      return <span className={className}>{children}</span>;
+    }
+    
+    return (
+      <span 
+        className={`${className} cursor-pointer hover:bg-yellow-200/50 hover:underline decoration-wavy transition-all rounded px-1`}
+        onClick={(e) => {
+          e.stopPropagation();
+          speak(text);
+        }}
+        title="Click to hear this text"
+      >
+        {children}
+      </span>
+    );
   };
 
   // --- GAME COMPONENTS ---
@@ -74,23 +95,32 @@ const ImproveDyslexiaPage = () => {
     };
 
     return (
-      <div className="space-y-8 text-center">
-        <div className="flex justify-between items-center bg-white border-4 border-black p-4 mb-4">
-          <span className="font-black uppercase">YOUR SCORE:</span>
+      <div className="space-y-6 text-center w-full">
+        <div className={`flex justify-between items-center p-4 rounded-xl border-2 ${isNeo ? "bg-white border-black" : "bg-black/5 border-black/5"}`}>
+          <span className="font-bold uppercase opacity-60">SCORE:</span>
           <span className="text-2xl font-black">{score}</span>
         </div>
         
-        <div className="min-h-[100px] border-4 border-dashed border-black flex items-center justify-center gap-2 p-4 bg-gray-50">
-          {selected.length === 0 ? <span className="text-gray-400 font-bold uppercase">Select letters below</span> : 
+        <div className={`min-h-[100px] flex items-center justify-center gap-2 p-4 rounded-2xl ${isNeo ? "border-4 border-dashed border-black bg-gray-50" : "bg-black/5 border-2 border-dashed border-black/10"}`}>
+          {selected.length === 0 ? <span className="opacity-40 font-bold uppercase">Select letters below</span> : 
             selected.map((l, i) => (
-              <motion.div initial={{scale:0}} animate={{scale:1}} key={i} className="w-12 h-12 bg-black text-white flex items-center justify-center text-2xl font-black">{l}</motion.div>
+              <motion.div 
+                initial={{scale:0}} 
+                animate={{scale:1}} 
+                key={i} 
+                onClick={() => setSelected(selected.filter((_, idx) => idx !== i))}
+                className={`w-12 h-12 flex items-center justify-center text-2xl font-black cursor-pointer hover:bg-red-500 transition-colors ${isNeo ? "bg-black text-white" : "bg-primary text-white rounded-lg"}`}
+                title="Click to remove"
+              >
+                {l}
+              </motion.div>
             ))
           }
         </div>
 
         <div className="flex flex-wrap justify-center gap-3">
           {scrambled.map((l, i) => (
-            <button key={i} onClick={() => setSelected([...selected, l])} className="w-14 h-14 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-2xl font-black hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">{l}</button>
+            <button key={i} onClick={() => setSelected([...selected, l])} className={`${isNeo ? "w-14 h-14 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-2xl font-black hover:translate-x-1 hover:translate-y-1 hover:shadow-none" : "w-14 h-14 bg-white/80 border-2 border-black/10 rounded-xl text-xl font-bold hover:border-primary hover:text-primary"} transition-all`}>{l}</button>
           ))}
         </div>
 
@@ -99,8 +129,10 @@ const ImproveDyslexiaPage = () => {
           <button onClick={check} className={s.btnPrimary} disabled={selected.length !== word.length}>CHECK ANSWER</button>
         </div>
 
-        {status === "correct" && <div className="p-4 bg-[#86EFAC] border-4 border-black font-black uppercase animate-bounce">AMAZING! CORRECT!</div>}
-        {status === "wrong" && <div className="p-4 bg-red-400 border-4 border-black font-black uppercase">TRY AGAIN!</div>}
+        <AnimatePresence>
+          {status === "correct" && <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="p-4 bg-green-500/10 text-green-700 rounded-xl font-bold uppercase">AMAZING! CORRECT!</motion.div>}
+          {status === "wrong" && <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="p-4 bg-red-500/10 text-red-700 rounded-xl font-bold uppercase">TRY AGAIN!</motion.div>}
+        </AnimatePresence>
       </div>
     );
   };
@@ -133,10 +165,10 @@ const ImproveDyslexiaPage = () => {
     };
 
     return (
-      <div className="space-y-8 text-center">
+      <div className="space-y-8 text-center w-full">
         <div className="grid grid-cols-2 gap-4">
-          <div className={`${s.card} bg-[#FEF08A] py-2`}>SCORE: {score}</div>
-          <div className={`${s.card} bg-[#FDA4AF] py-2`}>ATTEMPTS: {attempts}/3</div>
+          <div className={`p-3 rounded-xl border-2 font-bold ${isNeo ? "bg-white border-black" : "bg-yellow-500/10 border-yellow-500/20"}`}>SCORE: {score}</div>
+          <div className={`p-3 rounded-xl border-2 font-bold ${isNeo ? "bg-white border-black" : "bg-red-500/10 border-red-500/20"}`}>ATTEMPTS: {attempts}/3</div>
         </div>
         
         <button onClick={() => speak(word)} className={`${s.btnPrimary} w-full h-24 text-2xl flex items-center justify-center gap-4`}>
@@ -148,15 +180,16 @@ const ImproveDyslexiaPage = () => {
           value={input} 
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type the word you hear..."
-          className="w-full p-6 text-3xl font-black uppercase border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center focus:outline-none focus:ring-0"
+          className={`w-full p-6 text-3xl font-black uppercase text-center focus:outline-none ${isNeo ? "border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white" : "border-2 border-black/10 rounded-2xl bg-black/5"}`}
         />
 
         <div className="flex gap-4">
-          <button onClick={() => speak(word.charAt(input.length))} className={s.btnSecondary} style={{backgroundColor: '#ffffff'}}>GET LETTER</button>
+          <button onClick={() => setInput("")} className={s.btnSecondary} style={{flex: 1}} title="Clear all"><X /></button>
+          <button onClick={() => speak(word.charAt(input.length))} className={s.btnSecondary} style={{flex: 1}}>GET LETTER</button>
           <button onClick={check} className={s.btnPrimary} style={{flex: 2}}>CHECK</button>
         </div>
         
-        <button onClick={init} className="text-black font-black uppercase underline">Skip Word</button>
+        <button onClick={init} className="font-bold uppercase underline opacity-60">Skip Word</button>
       </div>
     );
   };
@@ -184,9 +217,9 @@ const ImproveDyslexiaPage = () => {
     };
 
     return (
-      <div className="space-y-10 text-center">
-        <div className="h-40 border-8 border-black bg-gray-50 flex items-center justify-center">
-          {show ? <span className="text-6xl font-black">{word}</span> : <div className="h-4 w-32 bg-black animate-pulse" />}
+      <div className="space-y-8 text-center w-full">
+        <div className={`h-40 flex items-center justify-center rounded-2xl ${isNeo ? "border-8 border-black bg-gray-50" : "bg-black/5 border-2 border-dashed border-black/10"}`}>
+          {show ? <span className="text-6xl font-black">{word}</span> : <div className="h-4 w-32 bg-current opacity-20 animate-pulse rounded-full" />}
         </div>
         
         {status === "ready" && <button onClick={flash} className={s.btnPrimary}>START FLASH</button>}
@@ -196,7 +229,7 @@ const ImproveDyslexiaPage = () => {
             <input 
               value={input} 
               onChange={e => setInput(e.target.value)} 
-              className="w-full p-4 text-3xl border-4 border-black text-center" 
+              className={`w-full p-4 text-3xl text-center uppercase focus:outline-none ${isNeo ? "border-4 border-black bg-white" : "border-2 border-black/10 rounded-xl bg-black/5"}`} 
               placeholder="What word did you see?" 
             />
             <button onClick={check} className={s.btnPrimary}>SUBMIT</button>
@@ -240,16 +273,16 @@ const ImproveDyslexiaPage = () => {
     };
 
     return (
-      <div className="text-center space-y-10">
-        <h3 className="text-3xl font-black uppercase">FIND THE LETTER: <span className="text-6xl text-primary">{target}</span></h3>
-        <div className="grid grid-cols-2 gap-10">
+      <div className="text-center space-y-8 w-full">
+        <h3 className="text-2xl font-bold uppercase">FIND THE LETTER: <span className="text-6xl text-primary font-black ml-2">{target}</span></h3>
+        <div className="grid grid-cols-2 gap-8">
           {pair.map(l => (
-            <button key={l} onClick={() => click(l)} className="h-40 border-8 border-black text-8xl font-black bg-white hover:bg-black hover:text-white transition-all shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+            <button key={l} onClick={() => click(l)} className={`${isNeo ? "h-40 border-8 border-black text-8xl font-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" : "h-40 border-2 border-black/10 text-7xl font-bold bg-white/50 backdrop-blur-md rounded-3xl hover:border-primary hover:text-primary"} transition-all`}>
               {l}
             </button>
           ))}
         </div>
-        <div className="text-2xl font-black">SCORE: {score}</div>
+        <div className="text-xl font-bold opacity-60 uppercase">SCORE: {score}</div>
       </div>
     );
   };
@@ -280,21 +313,24 @@ const ImproveDyslexiaPage = () => {
     };
 
     return (
-      <div className="text-center space-y-10">
-        <h3 className="text-5xl font-black">{item.word}</h3>
-        <div className="flex justify-center gap-4">
-          {[...Array(taps)].map((_, i) => (
-            <motion.div initial={{scale:0}} animate={{scale:1}} key={i} className="w-10 h-10 rounded-full bg-primary border-4 border-black" />
-          ))}
+      <div className="text-center space-y-10 w-full">
+        <div className="flex items-center justify-center gap-4">
+           <h3 className="text-5xl font-black tracking-tighter uppercase">{item.word}</h3>
+           <button onClick={() => speak(item.word)} className="p-2 bg-primary/10 rounded-full text-primary hover:bg-primary/20"><Volume2 /></button>
+        </div>
+        <div className="flex justify-center gap-4 min-h-[40px]">
+           {[...Array(taps)].map((_, i) => (
+             <motion.div initial={{scale:0}} animate={{scale:1}} key={i} className={`w-10 h-10 rounded-full border-2 ${isNeo ? "bg-black border-black" : "bg-primary border-primary"}`} />
+           ))}
         </div>
         <div className="flex gap-4 justify-center">
-           <button onClick={() => setTaps(t => t + 1)} className="w-24 h-24 border-8 border-black rounded-full bg-white text-4xl font-black shadow-lg">TAP</button>
-           <button onClick={() => setTaps(0)} className="w-24 h-24 border-8 border-black rounded-full bg-gray-100 flex items-center justify-center"><RefreshCw /></button>
+           <button onClick={() => setTaps(t => t + 1)} className={`${isNeo ? "w-24 h-24 border-8 border-black rounded-full bg-white text-4xl font-black shadow-lg" : "w-24 h-24 border-2 border-black/10 rounded-full bg-white/50 backdrop-blur-md text-3xl font-bold hover:border-primary hover:text-primary"} transition-all`}>TAP</button>
+           <button onClick={() => setTaps(0)} className="w-24 h-24 border-2 border-black/5 rounded-full bg-black/5 flex items-center justify-center"><RefreshCw className="opacity-40" /></button>
         </div>
         <button onClick={check} className={s.btnPrimary} disabled={taps === 0}>CHECK SYLLABLES</button>
         {status === "result" && (
-          <div className="space-y-4">
-             <p className="text-2xl font-black">{taps === item.count ? "CORRECT!" : "WRONG! IT HAS " + item.count}</p>
+          <div className="space-y-4 pt-4 border-t-2 border-black/5 mt-6">
+             <p className="text-xl font-bold uppercase">{taps === item.count ? "CORRECT!" : "WRONG! IT HAS " + item.count}</p>
              <button onClick={init} className={s.btnSecondary}>NEXT WORD</button>
           </div>
         )}
@@ -307,6 +343,7 @@ const ImproveDyslexiaPage = () => {
     const [target, setTarget] = useState("A");
     const [options, setOptions] = useState<string[]>([]);
     const [score, setScore] = useState(0);
+    const [status, setStatus] = useState<"playing" | "correct" | "wrong">("playing");
 
     const init = () => {
       const t = letters[Math.floor(Math.random() * letters.length)];
@@ -317,6 +354,7 @@ const ImproveDyslexiaPage = () => {
         if (!opts.includes(o)) opts.push(o);
       }
       setOptions(opts.sort(() => Math.random() - 0.5));
+      setStatus("playing");
     };
 
     useEffect(init, []);
@@ -324,27 +362,188 @@ const ImproveDyslexiaPage = () => {
     const click = (l: string) => {
       if (l === target) {
         setScore(s => s + 5);
+        setStatus("correct");
         speak("Correct!");
-        init();
+        setTimeout(init, 1500);
       } else {
+        setStatus("wrong");
         speak("Try another one.");
+        setTimeout(() => setStatus("playing"), 1500);
       }
     };
 
     return (
-      <div className="text-center space-y-12">
-        <button onClick={() => speak(target)} className="w-40 h-40 border-8 border-black bg-white rounded-full flex items-center justify-center mx-auto shadow-xl">
-           <Volume2 className="h-20 w-20" />
+      <div className="text-center space-y-12 w-full">
+        <button onClick={() => speak(target)} className={`w-32 h-32 flex items-center justify-center mx-auto transition-all ${isNeo ? "border-8 border-black bg-white rounded-full shadow-xl" : "bg-primary/10 rounded-3xl hover:bg-primary/20 text-primary"}`}>
+           <Volume2 className="h-16 w-16" />
         </button>
-        <p className="text-2xl font-black uppercase">LISTEN AND MATCH</p>
+        <p className="text-xl font-bold uppercase opacity-60">LISTEN AND MATCH THE LETTER</p>
         <div className="grid grid-cols-3 gap-6">
           {options.map(l => (
-            <button key={l} onClick={() => click(l)} className="h-24 border-4 border-black bg-[#D8B4FE] text-4xl font-black hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <button key={l} onClick={() => click(l)} className={`${isNeo ? "h-24 border-4 border-black bg-[#D8B4FE] text-4xl font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "h-24 border-2 border-black/10 bg-white/50 backdrop-blur-md rounded-2xl text-3xl font-bold hover:border-primary hover:text-primary"} transition-all`}>
               {l}
             </button>
           ))}
         </div>
-        <div className="text-2xl font-black">SCORE: {score}</div>
+        <div className="min-h-[30px]">
+           {status === "correct" && <p className="text-green-500 font-black animate-bounce uppercase">GREAT! +5 POINTS</p>}
+           {status === "wrong" && <p className="text-red-500 font-black uppercase">TRY AGAIN!</p>}
+        </div>
+        <div className="text-xl font-bold uppercase opacity-40">SCORE: {score}</div>
+      </div>
+    );
+  };
+
+  const PhonemeBuilderGame = () => {
+    const data = [
+      { word: "SHIP", phonemes: ["sh", "i", "p"] },
+      { word: "CHAT", phonemes: ["ch", "a", "t"] },
+      { word: "FISH", phonemes: ["f", "i", "sh"] },
+      { word: "THIN", phonemes: ["th", "i", "n"] }
+    ];
+    const [item, setItem] = useState(data[0]);
+    const [selected, setSelected] = useState<string[]>([]);
+    const [status, setStatus] = useState<"playing" | "correct">("playing");
+
+    const init = () => {
+      const i = data[Math.floor(Math.random() * data.length)];
+      setItem(i);
+      setSelected([]);
+      setStatus("playing");
+    };
+
+    useEffect(init, []);
+
+    const add = (p: string) => {
+      if (selected.length < item.phonemes.length) {
+        setSelected([...selected, p]);
+      }
+    };
+
+    const check = () => {
+      if (selected.join("") === item.word.toLowerCase()) {
+        setStatus("correct");
+        speak("Correct! " + item.word);
+      } else {
+        speak("Try again.");
+        setSelected([]);
+      }
+    };
+
+    return (
+      <div className="text-center space-y-10 w-full">
+        <h3 className="text-3xl font-black uppercase">BUILD THE WORD: <span className="text-primary">{item.word}</span></h3>
+        <div className="flex justify-center gap-4 min-h-[80px]">
+           {selected.map((p, i) => (
+             <motion.div 
+               initial={{scale:0}} 
+               animate={{scale:1}} 
+               key={i} 
+               onClick={() => setSelected(selected.filter((_, idx) => idx !== i))}
+               className={`w-20 h-20 flex items-center justify-center text-3xl font-black cursor-pointer hover:bg-red-500 transition-colors ${isNeo ? "bg-black text-white border-4 border-black" : "bg-primary text-white rounded-2xl"}`}
+               title="Click to remove"
+             >
+               {p}
+             </motion.div>
+           ))}
+           {[...Array(item.phonemes.length - selected.length)].map((_, i) => (
+             <div key={i} className={`w-20 h-20 border-4 border-dashed border-black/10 rounded-2xl`} />
+           ))}
+        </div>
+        <div className="flex justify-center gap-4">
+          {item.phonemes.sort(() => Math.random() - 0.5).map((p, i) => (
+            <button key={i} onClick={() => add(p)} className={`${isNeo ? "w-20 h-20 border-4 border-black bg-white text-3xl font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "w-20 h-20 border-2 border-black/10 bg-white/50 backdrop-blur-md rounded-2xl text-2xl font-bold hover:border-primary"}`}>{p}</button>
+          ))}
+        </div>
+        <div className="flex gap-4 justify-center">
+           <button onClick={() => setSelected([])} className={s.btnSecondary}><RefreshCw /></button>
+           <button onClick={check} className={s.btnPrimary} disabled={selected.length !== item.phonemes.length}>CHECK WORD</button>
+        </div>
+        {status === "correct" && <button onClick={init} className={s.btnPrimary}>NEXT WORD</button>}
+      </div>
+    );
+  };
+
+  const WordTracingGame = () => {
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const words = ["CAT", "DOG", "SUN", "BED", "HAT"];
+    const [wordIndex, setWordIndex] = useState(0);
+    const currentWord = words[wordIndex];
+
+    const drawWordTemplate = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.font = "bold 150px Arial";
+          ctx.fillStyle = isNeo ? "#f3f4f6" : "rgba(0,0,0,0.05)";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(currentWord, canvas.width / 2, canvas.height / 2);
+          ctx.strokeStyle = isNeo ? "#e5e7eb" : "rgba(0,0,0,0.1)";
+          ctx.lineWidth = 2;
+          ctx.strokeText(currentWord, canvas.width / 2, canvas.height / 2);
+          ctx.beginPath();
+        }
+      }
+    };
+
+    useEffect(() => {
+      drawWordTemplate();
+    }, [wordIndex]);
+
+    const start = (e: React.MouseEvent | React.TouchEvent) => {
+      setIsDrawing(true);
+      draw(e);
+    };
+    const end = () => {
+      setIsDrawing(false);
+      const canvas = canvasRef.current;
+      if (canvas) canvas.getContext("2d")?.beginPath();
+    };
+    const draw = (e: React.MouseEvent | React.TouchEvent) => {
+      if (!isDrawing) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+      const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+
+      ctx.lineWidth = 10;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = isNeo ? "#000" : "#7c3aed";
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    };
+
+    return (
+      <div className="text-center space-y-6 w-full">
+        <p className="text-xl font-bold uppercase opacity-60">Trace the word: <span className="text-primary font-black">{currentWord}</span></p>
+        <canvas 
+          ref={canvasRef} 
+          width={600} 
+          height={300} 
+          onMouseDown={start}
+          onMouseMove={draw}
+          onMouseUp={end}
+          onTouchStart={start}
+          onTouchMove={draw}
+          onTouchEnd={end}
+          className={`mx-auto bg-white/50 backdrop-blur-md cursor-crosshair ${isNeo ? "border-4 border-black" : "border-2 border-black/5 rounded-3xl shadow-inner"}`}
+        />
+        <div className="flex gap-4 justify-center">
+           <button onClick={drawWordTemplate} className={s.btnSecondary}>CLEAR CANVAS</button>
+           <button onClick={() => setWordIndex((prev) => (prev + 1) % words.length)} className={s.btnPrimary}>NEXT WORD <ArrowRight /></button>
+           <button onClick={() => speak(currentWord)} className={s.btnSecondary}><Volume2 /></button>
+        </div>
       </div>
     );
   };
@@ -359,12 +558,17 @@ const ImproveDyslexiaPage = () => {
     }
 
     return (
-      <div className="space-y-8">
-        <div className="p-8 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-3xl font-bold leading-[3em] relative overflow-hidden">
+      <div className="space-y-8 w-full">
+        <div className={`p-8 relative overflow-hidden ${isNeo ? "bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-3xl font-bold leading-[3em]" : "bg-white/40 backdrop-blur-md border border-black/5 rounded-3xl text-2xl font-medium leading-[2.5em]"}`}>
           {lines.map((l, i) => (
             <div key={i} className="relative z-10 px-4">
               {l}
-              {line === i && <motion.div layoutId="focus" className="absolute inset-0 bg-yellow-200/50 -z-10 border-y-4 border-yellow-400" />}
+              {line === i && (
+                <motion.div 
+                  layoutId="focus" 
+                  className={`absolute inset-0 -z-10 ${isNeo ? "bg-yellow-200/50 border-y-4 border-yellow-400" : "bg-primary/20 rounded-xl"}`} 
+                />
+              )}
             </div>
           ))}
         </div>
@@ -383,39 +587,48 @@ const ImproveDyslexiaPage = () => {
     if (!activeGame) return null;
     return (
       <motion.div 
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
-        className="mt-12 mb-20"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-20 pt-20 border-t-8 border-dashed border-black/5"
+        id="game-display"
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-4">
-            <Sparkles className="h-8 w-8 text-primary" />
-            Featured Activity: {activeGame.replace("-", " ")}
-          </h2>
-          <button 
-            onClick={() => {
-              setActiveGame(null);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }} 
-            className={`${s.btnSecondary} py-2`}
-          >
-            <ArrowLeft className="mr-2" /> BACK TO MENU
-          </button>
-        </div>
-        <div className={`w-full bg-white border-[6px] border-black p-6 md:p-12 ${isNeo ? "shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]" : "shadow-xl"}`}>
-          {activeGame === "word-sort" && <WordSortingGame />}
-          {activeGame === "audio-dictation" && <AudioDictationGame />}
-          {activeGame === "flash-word" && <FlashWordGame />}
-          {activeGame === "letter-match" && <LetterMatchGame />}
-          {activeGame === "syllable-tap" && <SyllableTapGame />}
-          {activeGame === "sound-match" && <LetterSoundMatchGame />}
-          {activeGame === "focus-line" && <FocusLineGame />}
-          
-          {!["word-sort", "audio-dictation", "flash-word", "letter-match", "syllable-tap", "sound-match", "focus-line"].includes(activeGame) && (
-            <div className="text-center py-10">
-              <h3 className="text-2xl font-black uppercase">Coming Soon</h3>
+        <div className={`w-full max-w-4xl mx-auto p-10 relative ${isNeo ? "bg-white border-8 border-black shadow-[20px_20px_0px_0px_rgba(0,0,0,1)]" : "bg-white/80 backdrop-blur-lg border border-black/5 shadow-2xl rounded-[3rem]"}`}>
+          <div className="flex justify-between items-center mb-10 pb-6 border-b-4 border-black/5">
+            <div className="flex items-center gap-4">
+               <div className={`w-14 h-14 flex items-center justify-center ${isNeo ? "bg-black text-white" : "bg-primary/10 text-primary rounded-2xl"}`}>
+                  <Gamepad2 className="h-8 w-8" />
+               </div>
+               <h2 className="text-4xl font-black uppercase tracking-tighter">{activeGame.replace("-", " ")}</h2>
             </div>
-          )}
+            <button 
+              onClick={() => { setActiveGame(null); stopReading(); }} 
+              className={`w-12 h-12 flex items-center justify-center transition-all ${isNeo ? "border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-0 active:translate-x-1 active:translate-y-1" : "bg-black/5 rounded-full hover:bg-black/10"}`}
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+
+          <div className="min-h-[400px] flex items-center justify-center">
+            {activeGame === "word-sort" && <WordSortingGame />}
+            {activeGame === "audio-dictation" && <AudioDictationGame />}
+            {activeGame === "flash-word" && <FlashWordGame />}
+            {activeGame === "letter-match" && <LetterMatchGame />}
+            {activeGame === "syllable-tap" && <SyllableTapGame />}
+            {activeGame === "sound-match" && <LetterSoundMatchGame />}
+            {activeGame === "focus-line" && <FocusLineGame />}
+            {activeGame === "phoneme-builder" && <PhonemeBuilderGame />}
+            {activeGame === "word-trace" && <WordTracingGame />}
+            
+            {/* Placeholder for other games */}
+            {!["word-sort", "audio-dictation", "flash-word", "letter-match", "syllable-tap", "sound-match", "focus-line", "phoneme-builder", "word-trace"].includes(activeGame) && (
+              <div className="text-center py-20">
+                <Sparkles className="h-20 w-20 mx-auto mb-6 text-yellow-400" />
+                <h3 className="text-3xl font-black uppercase">Coming Soon!</h3>
+                <p className="font-bold opacity-60">We are building this game right now.</p>
+                <button onClick={() => setActiveGame(null)} className={`${s.btnPrimary} mt-10`}>BACK TO MENU</button>
+              </div>
+            )}
+          </div>
         </div>
       </motion.div>
     );
@@ -460,13 +673,22 @@ const ImproveDyslexiaPage = () => {
     return (
       <div className="space-y-12 pb-20">
         <div className="text-center">
-           <h2 className="text-5xl font-black uppercase tracking-tighter mb-4">{c.title}</h2>
-           <p className="font-bold text-xl opacity-70">Games and activities for {level} dyslexia symptoms</p>
+           <h2 className={`${s.sectionTitle} mb-4`}>
+             <TTSText text={c.title}>{c.title}</TTSText>
+           </h2>
+           <p className={s.textMuted}>
+             <TTSText text={`Games and activities for ${level} dyslexia symptoms`}>
+               Games and activities for {level} dyslexia symptoms
+             </TTSText>
+           </p>
         </div>
 
-        <div className={`${s.card} ${isNeo ? "" : "bg-white"} bg-opacity-20 backdrop-blur-md p-8 border-[6px]`} style={{ borderColor: c.color }}>
-          <h3 className="text-2xl font-black uppercase mb-4" style={{ color: c.color }}>About {level} Level</h3>
-          <p className="text-lg font-bold leading-tight">{c.desc}</p>
+        <div className={`${s.card} border-[6px] relative overflow-hidden`} style={{ borderColor: isNeo ? "black" : c.color, backgroundColor: isNeo ? undefined : "rgba(255,255,255,0.4)" }}>
+          <div className="relative z-10">
+            <h3 className={`text-2xl font-black uppercase mb-4 ${isNeo ? "" : "text-slate-800"}`} style={{ color: isNeo ? c.color : undefined }}>About {level} Level</h3>
+            <p className={s.textBase}>{c.desc}</p>
+          </div>
+          {!isNeo && <div className="absolute top-0 right-0 w-32 h-32 opacity-10 -mr-8 -mt-8 rounded-full" style={{backgroundColor: c.color}} />}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -476,87 +698,204 @@ const ImproveDyslexiaPage = () => {
               initial={{ opacity:0, y:20 }} 
               animate={{ opacity:1, y:0 }} 
               transition={{ delay: i * 0.1 }}
-              className={`${s.card} group flex flex-col justify-between`}
+              className={`${s.card} group flex flex-col justify-between h-full`}
+              style={{ backgroundColor: isNeo ? undefined : "rgba(255,255,255,0.4)" }}
             >
               <div>
                 <div className="flex justify-between items-start mb-6">
-                  <div className="w-16 h-16 bg-black text-white flex items-center justify-center border-4 border-black group-hover:bg-white group-hover:text-black transition-colors">
-                    <g.icon className="h-8 w-8" />
+                  <div className={`w-14 h-14 flex items-center justify-center transition-colors ${isNeo ? "bg-black text-white border-4 border-black group-hover:bg-white group-hover:text-black" : "bg-black/5 text-slate-400 group-hover:bg-primary group-hover:text-white rounded-2xl"}`}>
+                    <g.icon className="h-7 w-7" />
                   </div>
-                  <span className={`${s.tag} bg-opacity-20`} style={{ backgroundColor: c.color }}>{level}</span>
+                  <span className={`${s.tag} bg-opacity-20`} style={{ backgroundColor: isNeo ? c.color : undefined, borderColor: isNeo ? "black" : undefined }}>{level}</span>
                 </div>
-                <h4 className="text-2xl font-black uppercase mb-2 tracking-tighter">{g.name}</h4>
-                <p className="font-bold opacity-70 text-sm">{g.desc}</p>
+                <h4 className={`text-2xl font-black uppercase mb-2 tracking-tighter ${isNeo ? "" : "text-slate-900"}`}>
+                  <TTSText text={g.name}>{g.name}</TTSText>
+                </h4>
+                <p className={`${s.textMuted} text-sm`}>
+                  <TTSText text={g.desc}>{g.desc}</TTSText>
+                </p>
               </div>
               <button 
                 onClick={() => {
                   setActiveGame(g.id as GameType);
                   setTimeout(() => {
-                    document.getElementById('game-section')?.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('game-display')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }} 
                 className={`${s.btnPrimary} mt-8 w-full`}
+                style={{ backgroundColor: isNeo ? "#86EFAC" : undefined }}
               >
                 PLAY GAME
               </button>
             </motion.div>
           ))}
         </div>
+
+        {renderGame()}
       </div>
     );
   };
 
   return (
-    <ScrollArea className="h-screen bg-white">
-      <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} text-black`}>
+    <ScrollArea className="h-screen bg-transparent">
+      <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} pb-40`}>
         <Navbar />
-        {renderGame()}
         
-        {/* TOP NAV BAR (MOCKING THE SCREENSHOT) */}
-        <div className="fixed top-20 left-0 right-0 z-40 bg-white border-b-4 border-black px-10 py-4 flex justify-center gap-10 font-black uppercase text-sm">
-           <button onClick={() => setCurrentLevel("home")} className={`hover:underline ${currentLevel === "home" ? "bg-black text-white px-2" : ""}`}>Home</button>
-           <button onClick={() => setCurrentLevel("mild")} className={`hover:underline ${currentLevel === "mild" ? "bg-black text-white px-2" : ""}`}>Mild</button>
-           <button onClick={() => setCurrentLevel("moderate")} className={`hover:underline ${currentLevel === "moderate" ? "bg-black text-white px-2" : ""}`}>Moderate</button>
-           <button onClick={() => setCurrentLevel("severe")} className={`hover:underline ${currentLevel === "severe" ? "bg-black text-white px-2" : ""}`}>Severe</button>
-        </div>
+        {/* TTS ENABLED INFO BANNER */}
+        {settings.textToSpeech && (
+          <div className={`fixed top-20 left-0 right-0 z-30 ${isNeo ? "bg-yellow-300 border-b-4 border-black" : "bg-gradient-to-r from-blue-50 to-purple-50 border-b-2 border-blue-200"} px-4 py-3 shadow-lg`}>
+            <div className="container mx-auto max-w-7xl flex items-center justify-center gap-3">
+              <Volume2 className={`h-5 w-5 ${isNeo ? "text-black" : "text-blue-600"} animate-pulse`} />
+              <span className={`font-bold text-sm ${isNeo ? "text-black" : "text-blue-800"}`}>
+                🔊 TTS ENABLED — Click on ANY highlighted text to hear it spoken aloud!
+              </span>
+            </div>
+          </div>
+        )}
 
-        <div className="container mx-auto pt-48 pb-20 px-4 max-w-7xl">
+        <div className={`container mx-auto ${settings.textToSpeech ? 'pt-36' : 'pt-20'} px-4 max-w-7xl`}>
+          {currentLevel !== "home" && (
+            <button 
+              onClick={() => { setCurrentLevel("home"); setActiveGame(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className={`mb-8 flex items-center gap-2 font-black uppercase text-sm px-6 py-3 transition-all ${isNeo ? "border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1" : "bg-primary/10 text-primary hover:bg-primary/20 rounded-xl"}`}
+            >
+              <ArrowLeft className="h-5 w-5" /> Back to Overview
+            </button>
+          )}
           {currentLevel === "home" && (
-            <div className="space-y-20">
-               <div className="text-center">
-                  <h1 className="text-7xl font-black uppercase tracking-tighter mb-6">CHOOSE YOUR LEVEL.</h1>
-                  <p className="text-2xl font-bold opacity-70">Select the difficulty that matches your needs</p>
-               </div>
-
-               <div className="grid md:grid-cols-3 gap-8">
-                  {[
-                    { id: "mild", color: "#86EFAC", desc: "Basic reading challenges. Scrambled letters and recognition." },
-                    { id: "moderate", color: "#FEF08A", desc: "Intermediate difficulties. Phonemes and audio dictation." },
-                    { id: "severe", color: "#FDA4AF", desc: "Significant challenges. Letter-to-sound fundamental matching." }
-                  ].map(l => (
-                    <div key={l.id} className={`${s.card} border-[8px] flex flex-col justify-between`} style={{ borderColor: l.color }}>
-                       <div>
-                          <h2 className="text-4xl font-black uppercase mb-4">{l.id}</h2>
-                          <p className="font-bold text-lg mb-8">{l.desc}</p>
-                       </div>
-                       <button onClick={() => {
-                         setCurrentLevel(l.id as Level);
-                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                       }} className={s.btnPrimary} style={{ backgroundColor: l.color }}>EXPLORE {l.id} ACTIVITIES</button>
+            <div className="space-y-32 pb-40">
+               {/* HERO SECTION */}
+               <section className="relative py-20 overflow-hidden rounded-[4rem]">
+                  {/* Abstract Background Shapes */}
+                  {!isNeo && (
+                    <div className="absolute inset-0 -z-10 opacity-20 overflow-hidden">
+                       <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
+                       <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2" />
                     </div>
-                  ))}
-               </div>
+                  )}
+                  
+                  <div className="text-center space-y-8 relative z-10">
+                     <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={`inline-block px-6 py-2 rounded-full font-black uppercase tracking-widest text-sm ${isNeo ? "bg-black text-white" : "bg-primary/10 text-primary"}`}
+                     >
+                        <TTSText text="Scientifically Proven">Scientifically Proven</TTSText>
+                     </motion.div>
+                     <h1 className={`text-7xl md:text-9xl font-black tracking-tighter leading-none ${isNeo ? "text-black" : "text-slate-900"}`}>
+                        <TTSText text="DyslexiaBoost">Dyslexia<span className="text-primary">Boost</span></TTSText>
+                     </h1>
+                     <p className={`text-xl md:text-2xl max-w-2xl mx-auto font-medium opacity-60`}>
+                        <TTSText text="Scientifically proven games and activities to help improve reading skills through multi-sensory engagement.">
+                          Scientifically proven games and activities to help improve reading skills through multi-sensory engagement.
+                        </TTSText>
+                     </p>
+                     <div className="flex justify-center gap-6 pt-4">
+                        <button 
+                          onClick={() => {
+                            document.getElementById('difficulty-selector')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className={`${s.btnPrimary} px-12 h-16 text-xl`}
+                        >
+                           GET STARTED
+                        </button>
+                     </div>
+                  </div>
+               </section>
+
+               {/* FEATURES SECTION */}
+               <section className="space-y-16">
+                  <div className="text-center">
+                     <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">Designed for Every Learning Style</h2>
+                     <p className="opacity-60 text-lg">Our approach combines engaging activities with science-backed techniques.</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-8">
+                     {[
+                       { title: "Cognitive Development", color: "#3B82F6", desc: "Activities designed to strengthen neural pathways involved in reading and word recognition.", icon: Sparkles },
+                       { title: "Multi-Sensory Learning", color: "#F59E0B", desc: "Games that engage visual, auditory, and kinesthetic learning styles for deeper comprehension.", icon: AudioLines },
+                       { title: "Progress Tracking", color: "#10B981", desc: "Detailed analytics and progress reports to track improvements and identify areas for growth.", icon: History }
+                     ].map((f, i) => (
+                       <motion.div 
+                         key={f.title}
+                         initial={{ opacity: 0, y: 20 }}
+                         whileInView={{ opacity: 1, y: 0 }}
+                         transition={{ delay: i * 0.1 }}
+                         className={`${s.card} border-t-8 h-full flex flex-col p-8`}
+                         style={{ borderColor: f.color, backgroundColor: isNeo ? undefined : "rgba(255,255,255,0.4)" }}
+                       >
+                          <div className={`w-12 h-12 flex items-center justify-center mb-6 ${isNeo ? "bg-black text-white" : "bg-black/5 rounded-xl"}`} style={{ color: isNeo ? f.color : undefined }}>
+                             <f.icon className="h-6 w-6" />
+                          </div>
+                          <h3 className="text-2xl font-black uppercase mb-3 tracking-tighter">{f.title}</h3>
+                          <p className="opacity-60 leading-relaxed">{f.desc}</p>
+                       </motion.div>
+                     ))}
+                  </div>
+               </section>
+
+               {/* BENEFITS SECTION */}
+               <section className="space-y-16">
+                  <div className="text-center">
+                     <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">Benefits of Our Approach</h2>
+                     <p className="opacity-60 text-lg">Research-based activities designed to effectively improve reading skills.</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-8">
+                     {[
+                       { title: "Scientifically Proven", icon: CheckCircle2, desc: "Activities based on extensive research in cognitive psychology and reading development." },
+                       { title: "Personalized Learning", icon: BookOpen, desc: "Activities that adapt to your specific needs and reading level." },
+                       { id: "severe", title: "Engaging Format", icon: Sparkles, desc: "Fun, game-based activities that make learning enjoyable and motivating." }
+                     ].map((b, i) => (
+                        <div key={b.title} className="flex gap-6 items-start">
+                           <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center ${isNeo ? "border-4 border-black bg-white" : "bg-primary/10 text-primary rounded-xl"}`}>
+                              <b.icon className="h-6 w-6" />
+                           </div>
+                           <div>
+                              <h4 className="text-xl font-black uppercase mb-2">{b.title}</h4>
+                              <p className="opacity-60 text-sm leading-relaxed">{b.desc}</p>
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </section>
+
+               {/* DIFFICULTY SELECTOR */}
+               <section id="difficulty-selector" className="space-y-20">
+                  <div className="text-center">
+                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">Ready to Begin?</h2>
+                     <p className="opacity-60 text-xl">Select a level that matches your current learning journey.</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-8">
+                     {[
+                       { id: "mild", color: "#86EFAC", desc: "Basic reading challenges. Scrambled letters and recognition." },
+                       { id: "moderate", color: "#FEF08A", desc: "Intermediate difficulties. Phonemes and audio dictation." },
+                       { id: "severe", color: "#FDA4AF", desc: "Significant challenges. Letter-to-sound fundamental matching." }
+                     ].map(l => (
+                       <div key={l.id} className={`${s.card} border-[8px] flex flex-col justify-between`} style={{ borderColor: isNeo ? "black" : l.color, backgroundColor: isNeo ? undefined : "rgba(255,255,255,0.4)" }}>
+                          <div>
+                             <h2 className="text-4xl font-black uppercase mb-4">{l.id}</h2>
+                             <p className={`${s.textBase} mb-8`}>{l.desc}</p>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              setCurrentLevel(l.id as Level);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }} 
+                            className={s.btnPrimary} 
+                            style={{ backgroundColor: isNeo ? l.color : undefined }}
+                          >
+                            EXPLORE {l.id} ACTIVITIES
+                          </button>
+                       </div>
+                     ))}
+                  </div>
+               </section>
             </div>
           )}
 
-          {currentLevel !== "home" && (
-            <>
-              <LevelSection level={currentLevel as any} />
-              <div id="game-section">
-                {renderGame()}
-              </div>
-            </>
-          )}
+          {currentLevel !== "home" && <LevelSection level={currentLevel as any} />}
         </div>
       </div>
     </ScrollArea>
