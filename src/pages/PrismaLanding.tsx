@@ -29,14 +29,14 @@ const PrismaLanding = () => {
             loop
             muted
             playsInline
-            className="absolute inset-0 w-full h-full object-cover grayscale opacity-80"
+            className="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-screen"
           >
             <source src="/shikshak-hero.mp4" type="video/mp4" />
           </video>
 
           {/* Overlays */}
-          <div className="absolute inset-0 noise-overlay opacity-[0.7] mix-blend-overlay pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/80" />
+          <div className="absolute inset-0 noise-overlay opacity-[0.6] mix-blend-overlay pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
 
           {/* Navbar */}
           <nav className="absolute top-0 left-1/2 -translate-x-1/2 z-50">

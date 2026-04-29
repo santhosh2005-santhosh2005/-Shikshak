@@ -225,9 +225,9 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-12">
-              <StatCard icon={Brain} number="2+" label="Years" index={0} />
+              <StatCard icon={Brain} number="20" label="Hours" index={0} />
               <StatCard icon={BookOpen} number="90%" label="Accuracy" index={1} />
-              <StatCard icon={CheckCircle} number="1.2M+" label="Users" index={2} />
+              <StatCard icon={CheckCircle} number="2+" label="Users" index={2} />
               <StatCard icon={Clock} number="10m" label="Quick" index={3} />
             </div>
 
@@ -294,9 +294,9 @@ const Index = () => {
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6 md:gap-10">
-              <TestimonialCard quote="Understanding my style made everything easier. Stress-free design." author="Abhishek A R." role="Student" index={0} />
-              <TestimonialCard quote="A safe, supportive environment for my daughter." author="Sheetal Kumari." role="Parent" index={1} />
-              <TestimonialCard quote="Finally feel understood without the fatigue." author="Amay Verma" role="Student" index={2} />
+              <TestimonialCard quote="Understanding my style made everything easier. Stress-free design." author="Santhosh" role="Student" index={0} />
+              <TestimonialCard quote="A safe, supportive environment for my daughter." author="Harshvardhan" role="Parent" index={1} />
+              <TestimonialCard quote="Finally feel understood without the fatigue." author="Bhuvi" role="Student" index={2} />
             </div>
           </div>
         </section>

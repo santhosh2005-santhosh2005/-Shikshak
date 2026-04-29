@@ -142,11 +142,12 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const applySettingsToDocument = (currentSettings: AccessibilitySettings) => {
     const root = document.documentElement;
 
-    // Font family
+    // Font family — update the --app-font CSS variable on the html element
+    // so it cascades through the * { font-family: var(--app-font) } rule in index.css
     const selectedFont = fontOptions.find(font => font.value === currentSettings.dyslexicFont);
     if (selectedFont) {
+      root.style.setProperty("--app-font", selectedFont.family);
       root.style.setProperty("--font-sans", selectedFont.family);
-      document.body.style.fontFamily = selectedFont.family;
     }
 
     // Disable animations
