@@ -20,8 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'sans-serif'],
-				heading: ['Space Grotesk', 'sans-serif'],
+				sans: ['var(--font-sans)', 'Inter', 'sans-serif'],
+				heading: ['var(--font-sans)', 'Space Grotesk', 'sans-serif'],
 				dyslexic: ['OpenDyslexic', 'sans-serif'],
 			},
 			colors: {

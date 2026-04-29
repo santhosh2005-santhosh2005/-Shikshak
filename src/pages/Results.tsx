@@ -1,11 +1,11 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Navbar } from "@/components/Navbar";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
-import { ArrowRight, Info, Check, AlertCircle, Clock, Target, Brain } from "lucide-react";
+import { ArrowRight, Info, Check, AlertCircle, Clock, Target, Brain, Lightbulb, HelpCircle } from "lucide-react";
+import { generateInsights, InsightData } from "@/lib/insightGenerator";
 
 interface TestResults {
   test: string;
@@ -46,6 +46,22 @@ const Results = () => {
     
     setIsLoaded(true);
   }, []);
+
+  // Generate intelligent insights from test results
+  const intelligentInsights = useMemo(() => {
+    if (!results) return null;
+    
+    const insightData: InsightData = {
+      accuracy: results.accuracy,
+      averageTime: results.averageTime,
+      timeScore: results.timeScore,
+      riskLevel: results.riskLevel,
+      riskFactors: results.riskFactors,
+      testType: results.test
+    };
+    
+    return generateInsights(insightData);
+  }, [results]);
 
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
@@ -182,6 +198,67 @@ const Results = () => {
                 </Card>
               </div>
 
+              {/* Intelligent Insights Section */}
+              {intelligentInsights && (
+                <div className="space-y-6">
+                  {/* Why This Is Happening */}
+                  <Card className="border-2 border-blue-100 bg-blue-50/30">
+                    <CardContent className="p-6">
+                      <div className="flex gap-4">
+                        <div className="flex-shrink-0 rounded-full p-3 bg-blue-100 text-blue-600">
+                          <HelpCircle className="h-6 w-6" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold mb-2 text-blue-900">Understanding Your Results</h3>
+                          <p className="text-slate-700 leading-relaxed mb-4">
+                            {intelligentInsights.primary.why}
+                          </p>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                              <div className="text-xs font-bold text-green-700 uppercase mb-1">Your Strength</div>
+                              <p className="text-sm text-green-800">{intelligentInsights.primary.strength}</p>
+                            </div>
+                            <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                              <div className="text-xs font-bold text-amber-700 uppercase mb-1">Area to Focus</div>
+                              <p className="text-sm text-amber-800">{intelligentInsights.primary.challenge}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* What To Do */}
+                  <Card className="border-2 border-primary/20 bg-primary/5">
+                    <CardContent className="p-6">
+                      <div className="flex gap-4">
+                        <div className="flex-shrink-0 rounded-full p-3 bg-primary/10 text-primary">
+                          <Lightbulb className="h-6 w-6" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold mb-2">Recommended Actions</h3>
+                          <p className="text-sm text-slate-600 mb-4">{intelligentInsights.recommendedApproach}</p>
+                          <div className="space-y-3">
+                            {intelligentInsights.primary.whatToDo.slice(0, 4).map((action, index) => (
+                              <div key={index} className="flex gap-3 p-3 bg-white rounded-lg border border-primary/10">
+                                <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                  {index + 1}
+                                </div>
+                                <p className="text-sm text-slate-700">{action}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div className="text-xs font-bold text-blue-700 uppercase mb-1">Learning Style</div>
+                            <p className="text-sm text-blue-800 font-medium">{intelligentInsights.learningStyle}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
               {/* Detailed Question Analysis */}
               {results.detailedResults && results.detailedResults.length > 0 && (
                 <Card>
@@ -234,6 +311,9 @@ const Results = () => {
                               <li>Schedule an appointment with an educational psychologist</li>
                               <li>Contact your local dyslexia association for resources</li>
                               <li>Explore our improvement activities for immediate support</li>
+                              {intelligentInsights?.primary.whatToDo.slice(0, 2).map((action, i) => (
+                                <li key={`insight-${i}`}>{action}</li>
+                              ))}
                             </ul>
                           </div>
                         )}
@@ -245,6 +325,22 @@ const Results = () => {
                               <li>Consider professional assessment for detailed evaluation</li>
                               <li>Try our dyslexia improvement exercises</li>
                               <li>Use reading aids and accessibility tools</li>
+                              {intelligentInsights?.primary.whatToDo.slice(0, 2).map((action, i) => (
+                                <li key={`insight-${i}`}>{action}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {results.riskLevel === "Low" && (
+                          <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                            <p className="text-sm font-medium text-green-800 mb-2">Continue Progress:</p>
+                            <ul className="text-sm text-green-700 space-y-1 list-disc pl-4">
+                              <li>Continue with current learning strategies</li>
+                              <li>Monitor progress regularly</li>
+                              {intelligentInsights?.primary.whatToDo.slice(0, 2).map((action, i) => (
+                                <li key={`insight-${i}`}>{action}</li>
+                              ))}
                             </ul>
                           </div>
                         )}

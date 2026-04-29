@@ -12,8 +12,11 @@ import {
   Loader2,
   FileText,
   Calendar,
-  Share2
+  Share2,
+  Brain,
+  Star
 } from "lucide-react";
+import { generateParentFriendlyInsight, InsightData } from "@/lib/insightGenerator";
 
 const ParentDigest = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -40,47 +43,39 @@ const ParentDigest = () => {
     // Mock data for generation if no real data exists
     const data = testData || {
       accuracy: 65,
-      riskLevel: "High",
+      riskLevel: "High" as const,
       test: "Phonological Awareness",
-      averageTime: 14.2
+      averageTime: 14.2,
+      learningType: "dyslexia" as const,
+      attentionSpan: 45,
+      weakAreas: [
+        { area: "Reading Speed", level: "Low" },
+        { area: "Phonological Awareness", level: "Weak" }
+      ]
     };
 
-    // Determine content based on data
-    let summary = "";
-    let observations = [];
-    let suggestions = [];
+    // Prepare insight data
+    const insightData: InsightData = {
+      accuracy: data.accuracy,
+      averageTime: data.averageTime,
+      timeScore: data.timeScore,
+      riskLevel: data.riskLevel,
+      learningType: data.learningType,
+      attentionSpan: data.attentionSpan,
+      weakAreas: data.weakAreas,
+      riskFactors: data.riskFactors
+    };
 
-    if (data.accuracy < 70 || data.riskLevel === "High") {
-      summary = "Your child is showing a wonderful effort in their reading tasks! We've noticed that while they have a strong visual memory for pictures, they sometimes find it a bit tricky to match sounds with letters. This is very common and something we can work on together with patience and support.";
-      observations = [
-        "Strong ability to remember visual patterns and images",
-        "Takes a little extra time to decode new or complex words",
-        "Shows great persistence even when tasks get challenging"
-      ];
-      suggestions = [
-        "Try using audio-assisted reading books where the child can listen and follow along",
-        "Focus on short, 10-minute fun reading sessions to prevent fatigue",
-        "Play rhyming games during everyday activities to strengthen sound awareness"
-      ];
-    } else {
-      summary = "Your child had a very productive learning session today! They showed great focus and were able to complete most tasks with high accuracy. They seem to enjoy structured activities and follow instructions very well.";
-      observations = [
-        "High level of accuracy in matching and sequencing tasks",
-        "Follows step-by-step instructions with great care",
-        "Shows a preference for predictable and organized learning environments"
-      ];
-      suggestions = [
-        "Continue providing a quiet, organized space for learning",
-        "Use visual schedules to help transition between different activities",
-        "Encourage their strengths in detail-oriented tasks"
-      ];
-    }
+    // Generate intelligent parent-friendly insights
+    const intelligentInsights = generateParentFriendlyInsight(insightData);
 
     setReport({
-      summary,
-      observations,
-      suggestions,
-      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      summary: intelligentInsights.summary,
+      observations: intelligentInsights.observations,
+      suggestions: intelligentInsights.suggestions,
+      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      learningStyle: data.learningStyle || "Individualized",
+      strength: data.strength || "Shows persistent effort"
     });
     setIsGenerating(false);
   };
@@ -162,6 +157,31 @@ const ParentDigest = () => {
                       {report.summary}
                     </p>
                   </section>
+
+                  {/* Learning Style & Strength */}
+                  {(report.learningStyle || report.strength) && (
+                    <section className="space-y-4">
+                      <h3 className="text-rose-600 font-bold uppercase tracking-wider text-sm flex items-center gap-2">
+                        <Brain className="h-4 w-4" /> Your Child's Profile
+                      </h3>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {report.learningStyle && (
+                          <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                            <div className="text-xs font-bold text-blue-700 uppercase mb-1">Learning Style</div>
+                            <p className="text-slate-700 font-medium">{report.learningStyle}</p>
+                          </div>
+                        )}
+                        {report.strength && (
+                          <div className="p-4 bg-green-50 rounded-2xl border border-green-100">
+                            <div className="text-xs font-bold text-green-700 uppercase mb-1 flex items-center gap-1">
+                              <Star className="h-3 w-3" /> Key Strength
+                            </div>
+                            <p className="text-slate-700 font-medium">{report.strength}</p>
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  )}
 
                   {/* Observations */}
                   <section className="space-y-4">

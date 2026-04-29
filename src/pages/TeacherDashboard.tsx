@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,18 +15,23 @@ import {
   AlertTriangle,
   Lightbulb,
   ArrowLeft,
-  Activity
+  Activity,
+  BookOpen,
+  TrendingUp,
+  HelpCircle
 } from "lucide-react";
+import { generateTeacherInsight, generateInsights, InsightData } from "@/lib/insightGenerator";
 
 // Mock Data
 const students = [
   {
     id: 1,
     name: "Alex Johnson",
-    learningType: "dyslexia",
-    riskLevel: "High",
+    learningType: "dyslexia" as const,
+    riskLevel: "High" as const,
     accuracy: 62,
     avgTime: 12.5,
+    timeScore: 45,
     weakAreas: [
       { area: "Reading Speed", level: "Low" },
       { area: "Phonological Awareness", level: "Weak" },
@@ -34,6 +39,11 @@ const students = [
     ],
     behaviorInsight: "Child struggles due to slow decoding speed and frequently confuses similar-looking letters (b/d). Reading fatigue sets in quickly.",
     attentionSpan: 45,
+    riskFactors: [
+      "Slow phonological decoding speed",
+      "Letter reversal patterns (b/d confusion)",
+      "Reading fatigue after short durations"
+    ],
     recommendations: [
       "Use OpenDyslexic font for all materials",
       "Provide audio support/text-to-speech for longer passages",
@@ -43,10 +53,11 @@ const students = [
   {
     id: 2,
     name: "Sam Smith",
-    learningType: "adhd",
-    riskLevel: "Moderate",
+    learningType: "adhd" as const,
+    riskLevel: "Moderate" as const,
     accuracy: 78,
     avgTime: 3.2,
+    timeScore: 85,
     weakAreas: [
       { area: "Focus Duration", level: "Low" },
       { area: "Impulse Control", level: "Moderate" },
@@ -54,6 +65,11 @@ const students = [
     ],
     behaviorInsight: "Attention drops after short duration. Fast completion speed suggests impulsive answering rather than lack of understanding.",
     attentionSpan: 30,
+    riskFactors: [
+      "Attention variability",
+      "Impulsive responding patterns",
+      "Difficulty with sustained focus"
+    ],
     recommendations: [
       "Use shorter lessons with frequent rewards",
       "Incorporate movement-based learning",
@@ -63,17 +79,23 @@ const students = [
   {
     id: 3,
     name: "Maya Patel",
-    learningType: "autism",
-    riskLevel: "Low",
+    learningType: "autism" as const,
+    riskLevel: "Low" as const,
     accuracy: 92,
     avgTime: 8.4,
+    timeScore: 78,
     weakAreas: [
       { area: "Social Inference", level: "Moderate" },
-      { area: "Contextual Flexiblity", level: "Low" },
+      { area: "Contextual Flexibility", level: "Low" },
       { area: "Transitioning", level: "Moderate" }
     ],
     behaviorInsight: "Highly accurate in structured tasks but struggles when rules change unexpectedly. Prefers predictable, step-by-step instructions.",
     attentionSpan: 85,
+    riskFactors: [
+      "Difficulty with unexpected changes",
+      "Challenges with social context",
+      "Needs explicit instructions"
+    ],
     recommendations: [
       "Provide clear, step-by-step structured tasks",
       "Maintain a consistent layout and routine",
@@ -89,6 +111,21 @@ const TeacherDashboard = () => {
   const filteredStudents = students.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Generate intelligent insights for selected student
+  const studentInsights = selectedStudent ? useMemo(() => {
+    const insightData: InsightData = {
+      accuracy: selectedStudent.accuracy,
+      averageTime: selectedStudent.avgTime,
+      timeScore: selectedStudent.timeScore,
+      riskLevel: selectedStudent.riskLevel,
+      riskFactors: selectedStudent.riskFactors,
+      learningType: selectedStudent.learningType,
+      attentionSpan: selectedStudent.attentionSpan,
+      weakAreas: selectedStudent.weakAreas
+    };
+    return generateTeacherInsight(insightData);
+  }, [selectedStudent]) : null;
 
   const getRiskBadge = (level: string) => {
     switch (level) {
@@ -244,32 +281,93 @@ const TeacherDashboard = () => {
                       </Card>
                     </div>
 
-                    {/* Behavioral Insight */}
-                    <Card className="h-full border-primary/20 bg-primary/5">
-                      <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                          <AlertTriangle className="h-5 w-5 text-primary" /> Behavior Insight
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-slate-700 leading-relaxed italic">
-                          "{selectedStudent.behaviorInsight}"
-                        </p>
-                        <div className="mt-6 p-4 bg-white rounded-xl border border-primary/10">
-                          <h4 className="text-xs font-bold text-primary uppercase mb-3 flex items-center gap-1">
-                            <Lightbulb className="h-3 w-3" /> Recommendations
-                          </h4>
-                          <ul className="space-y-2">
-                            {selectedStudent.recommendations.map((rec, i) => (
-                              <li key={i} className="text-sm text-slate-600 flex gap-2">
-                                <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                                {rec}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    {/* Behavioral Insight & Intelligent Analysis */}
+                    <div className="space-y-6">
+                      {/* Why This Is Happening */}
+                      <Card className="h-full border-2 border-blue-100 bg-blue-50/50">
+                        <CardHeader>
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <HelpCircle className="h-5 w-5 text-blue-600" /> Why This Is Happening
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="p-4 bg-white rounded-xl border border-blue-100">
+                            <p className="text-slate-700 leading-relaxed">
+                              {studentInsights?.whyExplanation || selectedStudent.behaviorInsight}
+                            </p>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                              <div className="text-xs font-bold text-green-700 uppercase mb-1">Strength</div>
+                              <p className="text-sm text-green-800">{studentInsights?.studentStrength || "Persistent effort"}</p>
+                            </div>
+                            <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                              <div className="text-xs font-bold text-amber-700 uppercase mb-1">Challenge</div>
+                              <p className="text-sm text-amber-800">{studentInsights?.mainChallenge || "Skill development"}</p>
+                            </div>
+                          </div>
+
+                          {studentInsights?.confidence && (
+                            <div className="flex items-center gap-2 text-xs text-slate-500">
+                              <TrendingUp className="h-3 w-3" />
+                              Insight confidence: {studentInsights.confidence}%
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* Recommended Actions */}
+                      <Card className="border-2 border-primary/20 bg-primary/5">
+                        <CardHeader>
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <Lightbulb className="h-5 w-5 text-primary" /> Recommended Actions
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="p-3 bg-white rounded-lg border border-primary/10">
+                            <div className="text-xs font-bold text-primary uppercase mb-2">Teaching Approach</div>
+                            <p className="text-sm text-slate-700">{studentInsights?.teachingApproach || "Use adaptive methods"}</p>
+                          </div>
+
+                          <div className="p-3 bg-white rounded-lg border border-primary/10">
+                            <div className="text-xs font-bold text-primary uppercase mb-2">Learning Style</div>
+                            <div className="flex items-center gap-2">
+                              <BookOpen className="h-4 w-4 text-primary" />
+                              <span className="text-sm font-medium text-slate-700">{studentInsights?.learningStyle || "Individualized"}</span>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-xs font-bold text-primary uppercase mb-3 flex items-center gap-1">
+                              <Lightbulb className="h-3 w-3" /> Actionable Strategies
+                            </h4>
+                            <ul className="space-y-2">
+                              {(studentInsights?.recommendedActions || selectedStudent.recommendations).map((rec, i) => (
+                                <li key={i} className="text-sm text-slate-600 flex gap-2">
+                                  <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                                  {rec}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {studentInsights?.generalObservations && studentInsights.generalObservations.length > 0 && (
+                            <div className="pt-4 border-t border-primary/10">
+                              <h4 className="text-xs font-bold text-slate-600 uppercase mb-2">General Observations</h4>
+                              <ul className="space-y-1">
+                                {studentInsights.generalObservations.map((obs, i) => (
+                                  <li key={i} className="text-xs text-slate-500 flex gap-2">
+                                    <div className="h-1 w-1 rounded-full bg-slate-400 mt-1.5 shrink-0" />
+                                    {obs}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </div>
                   </div>
                 </div>
               </motion.div>
