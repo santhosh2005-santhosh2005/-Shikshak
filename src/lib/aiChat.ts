@@ -17,8 +17,11 @@ const API_KEYS = {
   ollama: import.meta.env.VITE_OLLAMA_URL || 'http://localhost:11434',
 };
 
+// Helper to check if a key is a placeholder
+const isPlaceholder = (key: string) => !key || key.includes('your-') || key.includes('api-key');
+
 // Initialize Gemini
-const genAI = API_KEYS.gemini ? new GoogleGenerativeAI(API_KEYS.gemini) : null;
+const genAI = API_KEYS.gemini && !isPlaceholder(API_KEYS.gemini) ? new GoogleGenerativeAI(API_KEYS.gemini) : null;
 
 /**
  * Generic function for OpenAI-compatible APIs
@@ -54,8 +57,8 @@ const callOpenAICompatibleAPI = async (
       break;
   }
 
-  if (provider !== 'ollama' && !key) {
-    throw new Error(`Missing API key for ${provider}`);
+  if (provider !== 'ollama' && (!key || isPlaceholder(key))) {
+    throw new Error(`Missing or invalid API key for ${provider}. Please update your .env file.`);
   }
 
   const payload = {
@@ -125,7 +128,11 @@ INSTRUCTIONS:
 
     if (provider === 'gemini') {
       if (!genAI) {
-        return '⚠️ Please add your Gemini API key to the .env file.';
+        return `⚠️ Gemini API key is missing or invalid. Please add your VITE_GEMINI_API_KEY to the .env file.
+        
+You can get a free key at: https://aistudio.google.com/apikey
+        
+Alternatively, switch to another provider like Groq if you have that configured.`;
       }
 
       const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
@@ -173,7 +180,7 @@ Please include:
 
   try {
     if (provider === 'gemini') {
-      if (!genAI) return '⚠️ Gemini API key missing.';
+      if (!genAI) return '⚠️ Gemini API key missing or invalid. Please check your .env file or switch to another provider (like Groq) before uploading.';
       const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
       const result = await model.generateContent(prompt);
       const response = await result.response;
