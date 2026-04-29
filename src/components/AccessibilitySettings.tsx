@@ -28,6 +28,8 @@ type AccessibilitySettings = {
   disableAnimations: boolean;
   readingRuler: boolean;
   textToSpeech: boolean;
+  boldText: boolean;
+  uiTheme: "calm" | "neo";
 };
 
 const defaultSettings: AccessibilitySettings = {
@@ -38,6 +40,8 @@ const defaultSettings: AccessibilitySettings = {
   disableAnimations: false,
   readingRuler: false,
   textToSpeech: false,
+  boldText: false,
+  uiTheme: "calm",
 };
 
 const fontOptions = [
@@ -206,6 +210,20 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       root.classList.remove("increased-line-spacing");
     }
+
+    // Bold text
+    if (currentSettings.boldText) {
+      root.classList.add("bold-text-mode");
+    } else {
+      root.classList.remove("bold-text-mode");
+    }
+
+    // UI Theme
+    if (currentSettings.uiTheme === "neo") {
+      root.classList.add("theme-neo");
+    } else {
+      root.classList.remove("theme-neo");
+    }
   };
 
   const updateSettings = (newSettings: Partial<AccessibilitySettings>) => {
@@ -336,6 +354,25 @@ export const AccessibilitySettings = () => {
           </DrawerHeader>
           <div className="p-4 pb-0">
             <div className="space-y-6">
+              <div className="space-y-2">
+                <Label>Design Style</Label>
+                <ToggleGroup
+                  type="single"
+                  value={settings.uiTheme}
+                  onValueChange={(value) =>
+                    value && updateSettings({ uiTheme: value as "calm" | "neo" })
+                  }
+                  className="justify-start gap-2"
+                >
+                  <ToggleGroupItem value="calm" className="px-4 py-2 border rounded-xl">
+                    Adaptive Calm
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="neo" className="px-4 py-2 border rounded-xl">
+                    Neo-Brutalism
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="dyslexic-font">Dyslexia-friendly fonts</Label>
@@ -427,6 +464,22 @@ export const AccessibilitySettings = () => {
                     checked={settings.disableAnimations}
                     onCheckedChange={(checked) =>
                       updateSettings({ disableAnimations: checked })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="bold-text">Bold Typography</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Make all text thicker for better readability
+                    </p>
+                  </div>
+                  <Switch
+                    id="bold-text"
+                    checked={settings.boldText}
+                    onCheckedChange={(checked) =>
+                      updateSettings({ boldText: checked })
                     }
                   />
                 </div>

@@ -102,16 +102,35 @@
   }
   
   /* Background themes */
+  :root {
+    --app-bg: #ffffff;
+    --section-bg: #f8fafc;
+    --card-bg: #ffffff;
+  }
+
   .bg-sepia {
-    background-color: #fcefc7 !important;
+    --app-bg: #fcefc7 !important;
+    --section-bg: #f5e6b3 !important;
+    --card-bg: #fff9e6 !important;
+    background-color: var(--app-bg) !important;
   }
   
   .bg-soft-blue {
-    background-color: #d3e4fd !important;
+    --app-bg: #d3e4fd !important;
+    --section-bg: #c5dcfc !important;
+    --card-bg: #e3efff !important;
+    background-color: var(--app-bg) !important;
   }
   
   .bg-soft-gray {
-    background-color: #f1f0fb !important;
+    --app-bg: #f1f0fb !important;
+    --section-bg: #e8e7f5 !important;
+    --card-bg: #f8f7ff !important;
+    background-color: var(--app-bg) !important;
+  }
+  
+  .bold-text-mode, .bold-text-mode * {
+    font-weight: 700 !important;
   }
 }
 

@@ -1,240 +1,179 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAccessibility } from "@/components/AccessibilitySettings";
+import { getStyles, neoColors } from "@/lib/design-system";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
-  Sparkles, 
-  Heart, 
-  Lightbulb, 
-  Target, 
-  CheckCircle2, 
-  Loader2,
-  FileText,
-  Calendar,
-  Share2,
-  Brain,
-  Star
+  Sparkles, Heart, Lightbulb, Target, CheckCircle2, 
+  Loader2, FileText, Calendar, Share2, Brain, Star 
 } from "lucide-react";
 import { generateParentFriendlyInsight, InsightData } from "@/lib/insightGenerator";
 
 const ParentDigest = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [report, setReport] = useState<any>(null);
-  const [testData, setTestData] = useState<any>(null);
-
-  useEffect(() => {
-    const storedResults = localStorage.getItem("testResults");
-    if (storedResults) {
-      try {
-        setTestData(JSON.parse(storedResults));
-      } catch (e) {
-        console.error("Failed to parse results", e);
-      }
-    }
-  }, []);
+  const { settings } = useAccessibility();
+  const isNeo = settings.uiTheme === "neo";
+  const s = getStyles(settings.uiTheme);
 
   const generateParentSummary = async () => {
     setIsGenerating(true);
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Mock data for generation if no real data exists
-    const data = testData || {
+    const mockData: InsightData = {
       accuracy: 65,
       riskLevel: "High" as const,
-      test: "Phonological Awareness",
       averageTime: 14.2,
       learningType: "dyslexia" as const,
       attentionSpan: 45,
-      weakAreas: [
-        { area: "Reading Speed", level: "Low" },
-        { area: "Phonological Awareness", level: "Weak" }
-      ]
+      weakAreas: [{ area: "Reading Speed", level: "Low" }, { area: "Phonological Awareness", level: "Weak" }]
     };
 
-    // Prepare insight data
-    const insightData: InsightData = {
-      accuracy: data.accuracy,
-      averageTime: data.averageTime,
-      timeScore: data.timeScore,
-      riskLevel: data.riskLevel,
-      learningType: data.learningType,
-      attentionSpan: data.attentionSpan,
-      weakAreas: data.weakAreas,
-      riskFactors: data.riskFactors
-    };
-
-    // Generate intelligent parent-friendly insights
-    const intelligentInsights = generateParentFriendlyInsight(insightData);
+    const intelligentInsights = generateParentFriendlyInsight(mockData);
 
     setReport({
       summary: intelligentInsights.summary,
       observations: intelligentInsights.observations,
       suggestions: intelligentInsights.suggestions,
       date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      learningStyle: data.learningStyle || "Individualized",
-      strength: data.strength || "Shows persistent effort"
+      strength: "Shows persistent effort"
     });
     setIsGenerating(false);
   };
 
   return (
-    <div className="min-h-screen bg-rose-50/30">
-      <Navbar />
-      
-      <div className="container mx-auto pt-32 pb-20 px-4 max-w-3xl">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
-        >
-          <div className="inline-flex items-center justify-center p-3 bg-rose-100 rounded-2xl mb-4">
-            <Heart className="h-8 w-8 text-rose-500 fill-rose-500" />
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900">Parent Daily Digest</h1>
-          <p className="text-slate-600 mt-2">Simple, supportive insights into your child's learning journey</p>
-        </motion.div>
+    <ScrollArea className="h-screen" style={!isNeo ? { backgroundColor: 'var(--app-bg)' } : { backgroundColor: '#ffffff' }}>
+      <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} text-black`}>
+        <Navbar />
+        
+        <div className="container mx-auto pt-32 pb-20 px-4 max-w-3xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <span className={s.tag}>PARENT PORTAL</span>
+            <h1 className={`${s.sectionTitle} mt-4 text-center`}>DAILY DIGEST.</h1>
+            <p className={s.textMuted}>Simple, supportive insights into your child's journey.</p>
+          </motion.div>
 
-        {!report && !isGenerating && (
-          <Card className="border-dashed border-2 border-rose-200 bg-white/50 backdrop-blur-sm">
-            <CardContent className="p-12 text-center">
-              <Sparkles className="h-12 w-12 text-rose-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-slate-800 mb-2">Ready for Today's Update?</h3>
-              <p className="text-slate-500 mb-8 max-w-md mx-auto">
+          {!report && !isGenerating && (
+            <div className={`${s.card} ${isNeo ? "bg-[#FDA4AF]" : "bg-white"} text-center p-12`}>
+              <Sparkles className="h-16 w-16 mx-auto mb-6" />
+              <h3 className="text-2xl font-black uppercase mb-4">READY FOR AN UPDATE?</h3>
+              <p className={`${s.textBase} mb-10`}>
                 Our AI will analyze your child's recent activities and create a supportive summary just for you.
               </p>
-              <Button 
-                size="lg" 
-                className="bg-rose-500 hover:bg-rose-600 px-8 py-6 text-lg rounded-2xl shadow-lg shadow-rose-200"
+              <button 
+                className={s.btnPrimary}
                 onClick={generateParentSummary}
               >
-                Generate Today's Report
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+                GENERATE TODAY'S REPORT
+              </button>
+            </div>
+          )}
 
-        {isGenerating && (
-          <div className="flex flex-col items-center justify-center py-20 space-y-4">
-            <Loader2 className="h-12 w-12 text-rose-500 animate-spin" />
-            <p className="text-rose-600 font-medium animate-pulse">Creating your supportive summary...</p>
-          </div>
-        )}
+          {isGenerating && (
+            <div className="flex flex-col items-center justify-center py-20 space-y-6">
+              <Loader2 className="h-16 w-16 text-black animate-spin" />
+              <p className="font-black uppercase tracking-widest animate-pulse">CREATING SUPPORTIVE SUMMARY...</p>
+            </div>
+          )}
 
-        <AnimatePresence>
-          {report && !isGenerating && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="space-y-6"
-            >
-              <Card className="border-none shadow-xl shadow-rose-100 overflow-hidden">
-                <CardHeader className="bg-rose-500 text-white p-8">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-2xl flex items-center gap-2">
-                        <FileText className="h-6 w-6" /> Daily Progress Report
-                      </CardTitle>
-                      <CardDescription className="text-rose-100 flex items-center gap-1 mt-1">
-                        <Calendar className="h-3 w-3" /> {report.date}
-                      </CardDescription>
+          <AnimatePresence>
+            {report && !isGenerating && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="space-y-10"
+              >
+                <div className={`${s.card} p-0 overflow-hidden bg-white`}>
+                  <div className={`p-8 ${isNeo ? "bg-black text-white" : "bg-gray-100"} border-b-8 border-black`}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h2 className="text-3xl font-black uppercase flex items-center gap-3">
+                          <FileText className="h-8 w-8" /> PROGRESS REPORT
+                        </h2>
+                        <div className="flex items-center gap-2 mt-2 font-bold opacity-80">
+                          <Calendar className="h-4 w-4" /> {report.date}
+                        </div>
+                      </div>
+                      <button className={`p-2 border-4 border-black ${isNeo ? "bg-white text-black" : "bg-white"}`}>
+                        <Share2 className="h-5 w-5" />
+                      </button>
                     </div>
-                    <Button variant="secondary" size="icon" className="rounded-full bg-white/20 hover:bg-white/30 border-none text-white">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
                   </div>
-                </CardHeader>
-                
-                <CardContent className="p-8 space-y-10 bg-white">
-                  {/* Summary Section */}
-                  <section className="space-y-4">
-                    <h3 className="text-rose-600 font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                      <Heart className="h-4 w-4" /> Today's Story
-                    </h3>
-                    <p className="text-xl text-slate-700 leading-relaxed font-medium">
-                      {report.summary}
-                    </p>
-                  </section>
-
-                  {/* Learning Style & Strength */}
-                  {(report.learningStyle || report.strength) && (
-                    <section className="space-y-4">
-                      <h3 className="text-rose-600 font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                        <Brain className="h-4 w-4" /> Your Child's Profile
+                  
+                  <div className="p-8 space-y-12">
+                    <section>
+                      <h3 className="text-xl font-black uppercase mb-4 flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-red-500" /> TODAY'S STORY
                       </h3>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        {report.learningStyle && (
-                          <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                            <div className="text-xs font-bold text-blue-700 uppercase mb-1">Learning Style</div>
-                            <p className="text-slate-700 font-medium">{report.learningStyle}</p>
+                      <p className="text-xl font-bold leading-tight">{report.summary}</p>
+                    </section>
+
+                    <section className="grid md:grid-cols-2 gap-6">
+                       <div className={`p-6 border-4 border-black bg-[#86EFAC] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                          <div className="text-xs font-black uppercase mb-2">Key Strength</div>
+                          <p className="font-black text-lg">{report.strength}</p>
+                       </div>
+                       <div className={`p-6 border-4 border-black bg-[#D8B4FE] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                          <div className="text-xs font-black uppercase mb-2">Current Focus</div>
+                          <p className="font-black text-lg uppercase">Skill Building</p>
+                       </div>
+                    </section>
+
+                    <section>
+                      <h3 className="text-xl font-black uppercase mb-6 flex items-center gap-2">
+                        <Target className="h-5 w-5 text-blue-500" /> WHAT WE OBSERVED
+                      </h3>
+                      <div className="space-y-4">
+                        {report.observations.map((obs: string, i: number) => (
+                          <div key={i} className="flex gap-4 p-4 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <CheckCircle2 className="h-6 w-6 text-green-500 shrink-0" />
+                            <span className="font-bold">{obs}</span>
                           </div>
-                        )}
-                        {report.strength && (
-                          <div className="p-4 bg-green-50 rounded-2xl border border-green-100">
-                            <div className="text-xs font-bold text-green-700 uppercase mb-1 flex items-center gap-1">
-                              <Star className="h-3 w-3" /> Key Strength
-                            </div>
-                            <p className="text-slate-700 font-medium">{report.strength}</p>
-                          </div>
-                        )}
+                        ))}
                       </div>
                     </section>
-                  )}
 
-                  {/* Observations */}
-                  <section className="space-y-4">
-                    <h3 className="text-rose-600 font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                      <Target className="h-4 w-4" /> What We Observed
-                    </h3>
-                    <div className="grid gap-3">
-                      {report.observations.map((obs: string, i: number) => (
-                        <div key={i} className="flex gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                          <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                          <span className="text-slate-700">{obs}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Suggestions */}
-                  <section className="space-y-4">
-                    <h3 className="text-rose-600 font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                      <Lightbulb className="h-4 w-4" /> Ways to Support at Home
-                    </h3>
-                    <div className="grid gap-4">
-                      {report.suggestions.map((sug: string, i: number) => (
-                        <li key={i} className="list-none flex gap-4 text-slate-600">
-                          <div className="h-8 w-8 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center shrink-0 font-bold">
-                            {i + 1}
+                    <section>
+                      <h3 className="text-xl font-black uppercase mb-6 flex items-center gap-2">
+                        <Lightbulb className="h-5 w-5 text-yellow-500" /> AT-HOME SUPPORT
+                      </h3>
+                      <div className="grid gap-6">
+                        {report.suggestions.map((sug: string, i: number) => (
+                          <div key={i} className="flex gap-6">
+                            <div className="h-10 w-10 border-4 border-black bg-[#FEF08A] flex items-center justify-center font-black text-xl shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                              {i + 1}
+                            </div>
+                            <span className="font-bold pt-2">{sug}</span>
                           </div>
-                          <span className="pt-1">{sug}</span>
-                        </li>
-                      ))}
+                        ))}
+                      </div>
+                    </section>
+
+                    <div className="pt-8 border-t-8 border-black flex justify-center">
+                      <button 
+                        className={s.btnSecondary}
+                        onClick={() => setReport(null)}
+                      >
+                        GENERATE NEW REPORT
+                      </button>
                     </div>
-                  </section>
-
-                  <div className="pt-8 border-t flex justify-center">
-                    <Button 
-                      variant="outline" 
-                      className="text-rose-500 border-rose-200 hover:bg-rose-50 hover:text-rose-600"
-                      onClick={() => setReport(null)}
-                    >
-                      Generate New Report
-                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              <p className="text-center text-slate-400 text-sm italic">
-                This report was generated with love to help you support your child's unique learning path.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <p className="text-center font-black uppercase text-sm opacity-50">
+                  Created with love for your child's unique path.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 
