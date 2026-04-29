@@ -27,6 +27,7 @@ import ParentDigest from "./pages/ParentDigest";
 import NotFound from "./pages/NotFound";
 import SupportResourcesPage from "./pages/SupportResourcesPage";
 import ImproveDyslexiaPage from "./pages/ImproveDyslexiaPage";
+import AIChatPage from "./pages/AIChatPage";
 import { 
   AccessibilityProvider, 
   AccessibilitySettings
@@ -69,6 +70,7 @@ const App = () => (
             <Route path="/parent-digest" element={<ParentDigest />} />
             <Route path="/support" element={<SupportResourcesPage />} />
             <Route path="/improve" element={<ImproveDyslexiaPage />} />
+            <Route path="/ai-chat" element={<AIChatPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

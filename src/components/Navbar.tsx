@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
-import { useAccessibility } from "@/components/AccessibilitySettings";
+import { useAccessibility, AccessibilitySettings } from "@/components/AccessibilitySettings";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -67,6 +67,7 @@ export const Navbar = () => {
             ))}
             
             <div className="ml-4 flex items-center space-x-2 border-l pl-4 border-black/10">
+              <AccessibilitySettings showFloatingButton={false} />
               {user ? (
                 <Button 
                   variant="outline" 
@@ -91,6 +92,7 @@ export const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center lg:hidden gap-2">
+            <AccessibilitySettings showFloatingButton={false} />
             <Button
               variant="ghost"
               size="icon"

@@ -329,20 +329,31 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const AccessibilitySettings = () => {
+export const AccessibilitySettings = ({ showFloatingButton = true }: { showFloatingButton?: boolean }) => {
   const { settings, updateSettings, rulerHeight, updateRulerHeight } = useAccessibility();
 
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="fixed right-4 bottom-4 z-50 rounded-full h-10 w-10"
-          aria-label="Accessibility settings"
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
+        {showFloatingButton ? (
+          <Button
+            variant="outline"
+            size="icon"
+            className="fixed right-4 bottom-4 z-50 rounded-full h-10 w-10 shadow-lg"
+            aria-label="Accessibility settings"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-black/5"
+            aria-label="Accessibility settings"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        )}
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
