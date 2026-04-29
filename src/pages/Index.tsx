@@ -204,7 +204,7 @@ const Index = () => {
                   playsInline
                   className="w-full h-[350px] md:h-[450px] lg:h-[550px] object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
                 >
-                  <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4" type="video/mp4" />
+                  <source src="/shikshak-hero.mp4" type="video/mp4" />
                 </video>
               </div>
             </div>
