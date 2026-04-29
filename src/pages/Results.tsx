@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Navbar } from "@/components/Navbar";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
-import { ArrowRight, Info, Check, AlertCircle, Clock, Target, Brain, Lightbulb, HelpCircle } from "lucide-react";
+import { ArrowRight, Check, AlertCircle, Clock, Target, Brain, Lightbulb, HelpCircle } from "lucide-react";
+import { useAccessibility } from "@/components/AccessibilitySettings";
+import { getStyles, neoColors } from "@/lib/design-system";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { generateInsights, InsightData } from "@/lib/insightGenerator";
 
 interface TestResults {
@@ -16,41 +17,27 @@ interface TestResults {
   riskLevel: "Low" | "Moderate" | "High";
   correctAnswers: number;
   totalQuestions: number;
-  detailedResults?: Array<{
-    questionIndex: number;
-    isCorrect: boolean;
-    timeSpent: number;
-    difficulty: string;
-  }>;
 }
 
 const Results = () => {
   const [results, setResults] = useState<TestResults | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { settings } = useAccessibility();
+  const isNeo = settings.uiTheme === "neo";
+  const s = getStyles(settings.uiTheme);
 
   useEffect(() => {
     const storedResults = localStorage.getItem("testResults");
     if (storedResults) {
       try {
-        const parsedResults = JSON.parse(storedResults);
-        // Validate that the results have the required properties
-        if (parsedResults && 
-            typeof parsedResults.test === 'string' && 
-            typeof parsedResults.accuracy === 'number') {
-          setResults(parsedResults);
-        }
-      } catch (error) {
-        console.error("Failed to parse test results:", error);
-      }
+        setResults(JSON.parse(storedResults));
+      } catch (error) { console.error(error); }
     }
-    
     setIsLoaded(true);
   }, []);
 
-  // Generate intelligent insights from test results
   const intelligentInsights = useMemo(() => {
     if (!results) return null;
-    
     const insightData: InsightData = {
       accuracy: results.accuracy,
       averageTime: results.averageTime,
@@ -59,17 +46,8 @@ const Results = () => {
       riskFactors: results.riskFactors,
       testType: results.test
     };
-    
     return generateInsights(insightData);
   }, [results]);
-
-  const getRiskColor = (riskLevel: string) => {
-    switch (riskLevel) {
-      case "High": return "text-red-600 bg-red-100 border-red-300";
-      case "Moderate": return "text-amber-600 bg-amber-100 border-amber-300";
-      default: return "text-green-600 bg-green-100 border-green-300";
-    }
-  };
 
   const getRiskIcon = (riskLevel: string) => {
     switch (riskLevel) {
@@ -79,312 +57,119 @@ const Results = () => {
     }
   };
 
-  const getDyslexiaMessage = (riskLevel: string, riskFactors: string[]) => {
+  const getDyslexiaMessage = (riskLevel: string) => {
     switch (riskLevel) {
-      case "High":
-        return {
-          title: "High Indication of Dyslexia",
-          message: "Your test results show several patterns commonly associated with dyslexia. We strongly recommend consulting with a learning specialist or educational psychologist for a comprehensive evaluation."
-        };
-      case "Moderate":
-        return {
-          title: "Moderate Signs of Reading Difficulties",
-          message: "Your results suggest some challenges that may be related to dyslexia. Consider discussing these findings with an educational professional who can provide more detailed assessment."
-        };
-      default:
-        return {
-          title: "Low Indication of Dyslexia",
-          message: "Your test performance shows good reading comprehension and processing speed. However, if you continue to experience reading difficulties, professional evaluation may still be beneficial."
-        };
+      case "High": return { title: "High Indication", message: "Patterns associated with dyslexia detected. Professional evaluation recommended." };
+      case "Moderate": return { title: "Moderate Signs", message: "Some challenges related to dyslexia suggest professional assessment." };
+      default: return { title: "Low Indication", message: "Good processing speed. Professional evaluation may still be beneficial if difficulties persist." };
     }
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
-      <Navbar />
-      
-      <div className="absolute inset-0 -z-10 bg-grid"></div>
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background"></div>
-      
-      <div className="container mx-auto pt-32 pb-20 px-4 md:pt-40 relative z-0">
-        <div className={`max-w-5xl mx-auto transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="text-center mb-12">
-            <AnimatedHeading delay={200} className="text-3xl md:text-4xl font-bold mb-4">
-              Your Detailed Test Analysis
-            </AnimatedHeading>
-            {results && (
-              <p className="text-lg text-muted-foreground">
-                {results.test} - Comprehensive Results & Dyslexia Assessment
-              </p>
-            )}
-          </div>
-          
-          {results ? (
-            <div className="space-y-8">
-              {/* Dyslexia Risk Assessment */}
-              <Card className={`border-2 ${getRiskColor(results.riskLevel)}`}>
-                <CardContent className="p-6">
-                  <div className="flex gap-4">
-                    <div className={`flex-shrink-0 rounded-full p-3 ${getRiskColor(results.riskLevel)}`}>
-                      {React.createElement(getRiskIcon(results.riskLevel), { className: "h-6 w-6" })}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-2">
-                        {getDyslexiaMessage(results.riskLevel, results.riskFactors).title}
-                      </h3>
-                      <p className="text-sm mb-4">
-                        {getDyslexiaMessage(results.riskLevel, results.riskFactors).message}
-                      </p>
-                      
-                      {results.riskFactors && results.riskFactors.length > 0 && (
-                        <div>
-                          <h4 className="font-semibold mb-2">Identified Factors:</h4>
-                          <ul className="text-sm space-y-1">
-                            {results.riskFactors.map((factor, index) => (
-                              <li key={index} className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-current rounded-full"></div>
-                                {factor}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Performance Metrics */}
-              <div className="grid md:grid-cols-3 gap-6">
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Target className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-primary">
-                      {typeof results.accuracy === 'number' ? results.accuracy.toFixed(1) : 'N/A'}%
-                    </h3>
-                    <p className="text-sm text-muted-foreground">Reading Accuracy</p>
-                    <p className="text-xs mt-2">
-                      {results.correctAnswers} of {results.totalQuestions} correct
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Clock className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-blue-600">
-                      {typeof results.averageTime === 'number' ? results.averageTime.toFixed(1) : 'N/A'}s
-                    </h3>
-                    <p className="text-sm text-muted-foreground">Average Time</p>
-                    <p className="text-xs mt-2">Per question</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Brain className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-purple-600">
-                      {typeof results.timeScore === 'number' ? results.timeScore.toFixed(1) : 'N/A'}%
-                    </h3>
-                    <p className="text-sm text-muted-foreground">Processing Speed</p>
-                    <p className="text-xs mt-2">Compared to typical</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Intelligent Insights Section */}
-              {intelligentInsights && (
-                <div className="space-y-6">
-                  {/* Why This Is Happening */}
-                  <Card className="border-2 border-blue-100 bg-blue-50/30">
-                    <CardContent className="p-6">
-                      <div className="flex gap-4">
-                        <div className="flex-shrink-0 rounded-full p-3 bg-blue-100 text-blue-600">
-                          <HelpCircle className="h-6 w-6" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold mb-2 text-blue-900">Understanding Your Results</h3>
-                          <p className="text-slate-700 leading-relaxed mb-4">
-                            {intelligentInsights.primary.why}
-                          </p>
-                          <div className="grid md:grid-cols-2 gap-4">
-                            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                              <div className="text-xs font-bold text-green-700 uppercase mb-1">Your Strength</div>
-                              <p className="text-sm text-green-800">{intelligentInsights.primary.strength}</p>
-                            </div>
-                            <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                              <div className="text-xs font-bold text-amber-700 uppercase mb-1">Area to Focus</div>
-                              <p className="text-sm text-amber-800">{intelligentInsights.primary.challenge}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* What To Do */}
-                  <Card className="border-2 border-primary/20 bg-primary/5">
-                    <CardContent className="p-6">
-                      <div className="flex gap-4">
-                        <div className="flex-shrink-0 rounded-full p-3 bg-primary/10 text-primary">
-                          <Lightbulb className="h-6 w-6" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold mb-2">Recommended Actions</h3>
-                          <p className="text-sm text-slate-600 mb-4">{intelligentInsights.recommendedApproach}</p>
-                          <div className="space-y-3">
-                            {intelligentInsights.primary.whatToDo.slice(0, 4).map((action, index) => (
-                              <div key={index} className="flex gap-3 p-3 bg-white rounded-lg border border-primary/10">
-                                <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-                                  {index + 1}
-                                </div>
-                                <p className="text-sm text-slate-700">{action}</p>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                            <div className="text-xs font-bold text-blue-700 uppercase mb-1">Learning Style</div>
-                            <p className="text-sm text-blue-800 font-medium">{intelligentInsights.learningStyle}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {/* Detailed Question Analysis */}
-              {results.detailedResults && results.detailedResults.length > 0 && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-4">Question-by-Question Analysis</h3>
-                    <div className="space-y-3">
-                      {results.detailedResults.map((result, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                              result.isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-                            }`}>
-                              {index + 1}
-                            </div>
-                            <div>
-                              <p className="font-medium">
-                                Question {index + 1} - {result.difficulty} difficulty
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {result.isCorrect ? 'Correct' : 'Incorrect'} in {result.timeSpent.toFixed(1)}s
-                              </p>
-                            </div>
-                          </div>
-                          <div className={`px-2 py-1 rounded text-xs font-medium ${
-                            result.timeSpent > 30 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'
-                          }`}>
-                            {result.timeSpent > 30 ? 'Slow' : 'Good pace'}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Next Steps */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 rounded-full p-2 bg-blue-100 text-blue-600">
-                      <Info className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg mb-2">Recommended Next Steps</h3>
-                      <div className="space-y-3">
-                        {results.riskLevel === "High" && (
-                          <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-                            <p className="text-sm font-medium text-red-800 mb-2">Immediate Recommendations:</p>
-                            <ul className="text-sm text-red-700 space-y-1 list-disc pl-4">
-                              <li>Schedule an appointment with an educational psychologist</li>
-                              <li>Contact your local dyslexia association for resources</li>
-                              <li>Explore our improvement activities for immediate support</li>
-                              {intelligentInsights?.primary.whatToDo.slice(0, 2).map((action, i) => (
-                                <li key={`insight-${i}`}>{action}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        
-                        {results.riskLevel === "Moderate" && (
-                          <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                            <p className="text-sm font-medium text-amber-800 mb-2">Suggested Actions:</p>
-                            <ul className="text-sm text-amber-700 space-y-1 list-disc pl-4">
-                              <li>Consider professional assessment for detailed evaluation</li>
-                              <li>Try our dyslexia improvement exercises</li>
-                              <li>Use reading aids and accessibility tools</li>
-                              {intelligentInsights?.primary.whatToDo.slice(0, 2).map((action, i) => (
-                                <li key={`insight-${i}`}>{action}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {results.riskLevel === "Low" && (
-                          <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                            <p className="text-sm font-medium text-green-800 mb-2">Continue Progress:</p>
-                            <ul className="text-sm text-green-700 space-y-1 list-disc pl-4">
-                              <li>Continue with current learning strategies</li>
-                              <li>Monitor progress regularly</li>
-                              {intelligentInsights?.primary.whatToDo.slice(0, 2).map((action, i) => (
-                                <li key={`insight-${i}`}>{action}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        <div className="flex gap-3 mt-4">
-                          <Button size="sm" variant="outline" asChild>
-                            <Link to="/about">Learn More About Dyslexia</Link>
-                          </Button>
-                          <Button size="sm" asChild>
-                            <Link to="/improve">Try Improvement Activities</Link>
-                          </Button>
-                          <Button size="sm" className="bg-primary hover:bg-primary/90" asChild>
-                            <Link to="/learning-mode">Start Personalized Learning</Link>
-                          </Button>
-                          <Button size="sm" variant="outline" asChild>
-                            <Link to="/tests">Take Another Test</Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+    <ScrollArea className="h-screen" style={!isNeo ? { backgroundColor: 'var(--app-bg)' } : { backgroundColor: '#ffffff' }}>
+      <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} text-black`}>
+        <Navbar />
+        
+        <div className="container mx-auto pt-32 pb-20 px-4 relative z-0">
+          <div className={`max-w-5xl mx-auto transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <div className="text-center mb-12">
+               <span className={s.tag}>ANALYSIS</span>
+               <AnimatedHeading delay={200} className={`${s.sectionTitle} text-center`}>TEST ANALYSIS.</AnimatedHeading>
+               {results && <p className={s.textMuted}>{results.test} - COMPLETE ASSESSMENT</p>}
             </div>
-          ) : (
-            <Card className="p-8 text-center">
-              <p className="text-lg">No test results found. Please take a test first.</p>
-              <Button className="mt-6" asChild>
-                <Link to="/tests">Go to Tests</Link>
-              </Button>
-            </Card>
-          )}
-          
-          <div className="flex justify-center mt-12">
-            <Button variant="outline" size="lg" className="gap-2 rounded-full px-6" asChild>
-              <Link to="/">
-                Back to Home
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+            
+            {results ? (
+              <div className="space-y-10">
+                {/* Risk Assessment */}
+                <div className={`${s.card} ${isNeo ? (results.riskLevel === 'High' ? 'bg-[#FDA4AF]' : 'bg-[#86EFAC]') : 'bg-white'}`}>
+                  <div className="flex flex-col md:flex-row gap-8 items-center">
+                    <div className={`w-20 h-20 border-4 border-black flex items-center justify-center bg-white ${isNeo ? "" : "rounded-full"}`}>
+                       {React.createElement(getRiskIcon(results.riskLevel), { className: "h-10 w-10" })}
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                       <h3 className="text-3xl font-black uppercase mb-2">
+                        {getDyslexiaMessage(results.riskLevel).title}
+                       </h3>
+                       <p className="font-bold leading-tight mb-4">
+                        {getDyslexiaMessage(results.riskLevel).message}
+                       </p>
+                       <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                          {results.riskFactors.map((f, i) => (
+                            <span key={i} className="bg-black text-white px-2 py-0.5 text-[10px] font-black uppercase">{f}</span>
+                          ))}
+                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Performance Metrics */}
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className={`${s.card} ${isNeo ? "bg-[#FEF08A]" : "bg-white"} text-center`}>
+                    <Target className="h-10 w-10 mx-auto mb-4" />
+                    <div className="text-4xl font-black">{results.accuracy.toFixed(1)}%</div>
+                    <div className="text-xs font-black uppercase">Reading Accuracy</div>
+                  </div>
+                  <div className={`${s.card} ${isNeo ? "bg-[#86EFAC]" : "bg-white"} text-center`}>
+                    <Clock className="h-10 w-10 mx-auto mb-4" />
+                    <div className="text-4xl font-black">{results.averageTime.toFixed(1)}s</div>
+                    <div className="text-xs font-black uppercase">Avg Response</div>
+                  </div>
+                  <div className={`${s.card} ${isNeo ? "bg-[#D8B4FE]" : "bg-white"} text-center`}>
+                    <Brain className="h-10 w-10 mx-auto mb-4" />
+                    <div className="text-4xl font-black">{results.timeScore.toFixed(1)}%</div>
+                    <div className="text-xs font-black uppercase">Processing Speed</div>
+                  </div>
+                </div>
+
+                {/* Intelligent Insights */}
+                {intelligentInsights && (
+                  <div className="space-y-8">
+                    <div className={`${s.card} ${isNeo ? "bg-[#D1FAE5]" : "bg-white"}`}>
+                      <h3 className="text-2xl font-black uppercase mb-6 flex items-center gap-2"><HelpCircle /> UNDERSTANDING YOUR RESULTS</h3>
+                      <p className="font-bold mb-6">{intelligentInsights.primary.why}</p>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="p-4 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <div className="text-[10px] font-black uppercase mb-1">Your Strength</div>
+                          <p className="font-black text-sm">{intelligentInsights.primary.strength}</p>
+                        </div>
+                        <div className="p-4 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <div className="text-[10px] font-black uppercase mb-1">Focus Area</div>
+                          <p className="font-black text-sm">{intelligentInsights.primary.challenge}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`${s.card} ${isNeo ? "bg-[#FEF08A]" : "bg-white"}`}>
+                       <h3 className="text-2xl font-black uppercase mb-6 flex items-center gap-2"><Lightbulb /> RECOMMENDED ACTIONS</h3>
+                       <div className="space-y-4">
+                          {intelligentInsights.primary.whatToDo.slice(0, 4).map((a, i) => (
+                            <div key={i} className="bg-white border-4 border-black p-4 font-bold flex gap-4 items-center">
+                               <div className="h-8 w-8 bg-black text-white flex items-center justify-center font-black">{i+1}</div>
+                               {a}
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Navigation */}
+                <div className="flex flex-wrap gap-4 justify-center mt-12">
+                   <Link to="/learning-mode" className={s.btnPrimary}>START LEARNING <ArrowRight /></Link>
+                   <Link to="/improve" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>IMPROVEMENT ACTIVITIES</Link>
+                   <Link to="/tests" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>TAKE ANOTHER TEST</Link>
+                </div>
+              </div>
+            ) : (
+              <div className={`${s.card} text-center py-20 bg-white`}>
+                <p className="text-xl font-black uppercase mb-8">No results found.</p>
+                <Link to="/tests" className={s.btnPrimary}>GO TO TESTS</Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
+import { useAccessibility } from "@/components/AccessibilitySettings";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,192 +13,135 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { settings } = useAccessibility();
+  const isNeo = settings.uiTheme === "neo";
   const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 50);
+      setIsScrolled(window.scrollY > 50);
     };
-
-    if (isHomePage) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    } else {
-      setIsScrolled(true);
-    }
-  }, [isHomePage]);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
     { text: "Home", href: "/" },
     { text: "About", href: "/about" },
     { text: "Tests", href: "/tests" },
-    { text: "Support", href: "/support" },
     { text: "Improve", href: "/improve" },
-    { text: "Teacher", href: "/teacher-dashboard" },
-    { text: "Parent", href: "/parent-digest" },
+    { text: "Support", href: "/support" },
+    { text: "Dashboard", href: "/teacher-dashboard" },
+    { text: "Digest", href: "/parent-digest" },
   ];
 
   const isActive = (href: string) => location.pathname === href;
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/signin");
-  };
-
   return (
-    <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "py-3 bg-background/80 backdrop-blur-lg border-b shadow-sm"
-            : "py-3 bg-background/80 backdrop-blur-lg border-b shadow-sm"
-        }`}
-      >
-        <div className="container flex items-center justify-between">
-          <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-black">Shikshak</span>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
+      <div className="container px-4">
+        <div className={`flex items-center justify-between p-4 transition-all duration-300 ${
+          isNeo 
+          ? "bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" 
+          : "bg-white/80 backdrop-blur-md rounded-2xl border shadow-sm"
+        }`}>
+          <Link to="/" className="flex items-center gap-2">
+            <div className={`h-10 w-10 flex items-center justify-center font-black text-2xl ${isNeo ? "bg-black text-white" : "bg-primary text-white rounded-xl"}`}>S</div>
+            <span className={`text-2xl font-black uppercase tracking-tighter ${isNeo ? "text-black" : "text-slate-900"}`}>Shikshak</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-2">
             {navLinks.map((link) => (
               <Link
                 key={link.text}
                 to={link.href}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-black uppercase transition-all ${
                   isActive(link.href)
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? (isNeo ? "bg-black text-white" : "text-primary bg-primary/10 rounded-lg")
+                    : (isNeo ? "text-black hover:bg-black/5" : "text-slate-600 hover:text-primary")
                 }`}
               >
                 {link.text}
               </Link>
             ))}
-            <div className="ml-4 flex items-center space-x-2">
+            
+            <div className="ml-4 flex items-center space-x-2 border-l pl-4 border-black/10">
               {user ? (
-                <>
-                  <Link to="/external-profile">
-                    <Button variant="ghost" size="sm">
-                      Profile
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={handleSignOut}>
-                    Sign Out
-                  </Button>
-                </>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => signOut()}
+                  className={isNeo ? "border-4 border-black font-black uppercase rounded-none" : "rounded-xl"}
+                >
+                  Sign Out
+                </Button>
               ) : (
-                <>
-                  <Link to="/signin">
-                    <Button variant="ghost" size="sm">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link to="/signup">
-                    <Button variant="default" size="sm">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
+                <Link to="/signin">
+                  <Button 
+                    size="sm" 
+                    className={isNeo ? "bg-black text-white border-4 border-black font-black uppercase rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" : "rounded-xl"}
+                  >
+                    Sign In
+                  </Button>
+                </Link>
               )}
-              <ThemeToggle />
+              <div className={isNeo ? "border-4 border-black p-1 bg-white" : ""}>
+                <ThemeToggle />
+              </div>
             </div>
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center md:hidden">
+          <div className="flex items-center md:hidden gap-2">
             <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleMenu}
-              className="ml-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={isNeo ? "border-4 border-black rounded-none" : ""}
             >
-              <Menu />
+              {isMenuOpen ? <X /> : <Menu />}
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-[60px] left-0 right-0 bg-background/95 backdrop-blur-lg border-b z-40 md:hidden"
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed inset-x-4 top-24 z-40 md:hidden"
           >
-            <nav className="container py-4 flex flex-col">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.text}
-                  to={link.href}
-                  className={`px-4 py-3 text-sm font-medium rounded-md transition-colors ${
-                    isActive(link.href)
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:bg-muted"
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.text}
-                </Link>
-              ))}
-
-              <div className="mt-4 flex flex-col gap-2 px-4">
-                {user ? (
-                  <>
-                    <Link
-                      to="/external-profile"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Button variant="outline" className="w-full">
-                        Profile
-                      </Button>
+            <div className={`p-6 ${isNeo ? "bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" : "bg-white rounded-3xl border shadow-xl shadow-slate-200/50 backdrop-blur-xl"}`}>
+              <nav className="flex flex-col space-y-2">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.text}
+                    to={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`px-4 py-3 font-black uppercase text-sm ${isActive(link.href) ? "bg-black text-white" : "hover:bg-slate-100"}`}
+                  >
+                    {link.text}
+                  </Link>
+                ))}
+                <div className="pt-4 border-t border-black/10 flex flex-col gap-2">
+                  {user ? (
+                     <Button variant="outline" className={isNeo ? "border-4 border-black font-black rounded-none" : "rounded-xl"} onClick={() => signOut()}>Sign Out</Button>
+                  ) : (
+                    <Link to="/signin" onClick={() => setIsMenuOpen(false)}>
+                      <Button className={`w-full ${isNeo ? "border-4 border-black font-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "rounded-xl"}`}>Sign In</Button>
                     </Link>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={async () => {
-                        await handleSignOut();
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Link to="/signin">
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Sign In
-                      </Button>
-                    </Link>
-                    <Link to="/signup">
-                      <Button
-                        variant="default"
-                        className="w-full"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Sign Up
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </div>
-            </nav>
+                  )}
+                </div>
+              </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </header>
   );
 };
