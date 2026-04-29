@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Settings } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
-import { useAccessibility, AccessibilitySettings } from "@/components/AccessibilitySettings";
+import { useAccessibility } from "@/components/AccessibilitySettings";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,13 +27,11 @@ export const Navbar = () => {
 
   const navLinks = [
     { text: "Home", href: "/" },
-    { text: "Start Learning", href: "/tests" },
-    { text: "Progress", href: "/improve" },
-    { text: "AI Chat", href: "/ai-chat" },
-    { text: "Dashboard", href: "/teacher-dashboard" },
-    { text: "Report", href: "/parent-digest" },
-    { text: "Support", href: "/support" },
     { text: "About", href: "/about" },
+    { text: "Tests", href: "/tests" },
+    { text: "Support", href: "/support" },
+    { text: "Dashboard", href: "/teacher-dashboard" },
+    { text: "Digest", href: "/parent-digest" },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -52,12 +50,12 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-2">
             {navLinks.map((link) => (
               <Link
                 key={link.text}
                 to={link.href}
-                className={`px-3 py-2 text-xs xl:text-sm font-black uppercase transition-all ${
+                className={`px-4 py-2 text-sm font-black uppercase transition-all ${
                   isActive(link.href)
                     ? (isNeo ? "bg-black text-white" : "text-primary bg-primary/10 rounded-lg")
                     : (isNeo ? "text-black hover:bg-black/5" : "text-slate-600 hover:text-primary")
@@ -68,27 +66,15 @@ export const Navbar = () => {
             ))}
             
             <div className="ml-4 flex items-center space-x-2 border-l pl-4 border-black/10">
-              <AccessibilitySettings showFloatingButton={false} />
-              {user || localStorage.getItem("shikshak_demo_mode") === "true" ? (
-                <>
-                  <Link to="/profile">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className={isNeo ? "font-black uppercase" : "font-bold"}
-                    >
-                      Profile
-                    </Button>
-                  </Link>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => signOut()}
-                    className={isNeo ? "border-4 border-black font-black uppercase rounded-none" : "font-bold border-[#E2E8F0] rounded-xl"}
-                  >
-                    Sign Out
-                  </Button>
-                </>
+              {user ? (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => signOut()}
+                  className={isNeo ? "border-4 border-black font-black uppercase rounded-none" : "rounded-xl"}
+                >
+                  Sign Out
+                </Button>
               ) : (
                 <Link to="/signin">
                   <Button 
@@ -99,12 +85,15 @@ export const Navbar = () => {
                   </Button>
                 </Link>
               )}
+              <div className={isNeo ? "border-4 border-black p-1 bg-white" : ""}>
+                <ThemeToggle />
+              </div>
             </div>
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center lg:hidden gap-2">
-            <AccessibilitySettings showFloatingButton={false} />
+          <div className="flex items-center md:hidden gap-2">
+            <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"
@@ -124,7 +113,7 @@ export const Navbar = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed inset-x-4 top-24 z-40 lg:hidden"
+            className="fixed inset-x-4 top-24 z-40 md:hidden"
           >
             <div className={`p-6 ${isNeo ? "bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" : "bg-white rounded-3xl border shadow-xl shadow-slate-200/50 backdrop-blur-xl"}`}>
               <nav className="flex flex-col space-y-2">

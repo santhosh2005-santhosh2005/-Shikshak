@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Globe, Users, Mail, Phone, Heart, Building, Send, Brain, BookOpen, CheckCircle, Clock, Star } from "lucide-react";
+import { ArrowRight, Globe, Users, Mail, Phone, Heart, Building, Send, Brain, BookOpen, CheckCircle, Clock } from "lucide-react";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { Navbar } from "@/components/Navbar";
 import { useAccessibility } from "@/components/AccessibilitySettings";
-import { TTSText, TTSBanner } from "@/components/TTSText";
 import { motion } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -158,44 +158,30 @@ const Index = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} text-black selection:bg-[#FEF08A] selection:text-black`} style={!isNeo ? { backgroundColor: 'var(--app-bg)' } : { backgroundColor: '#ffffff' }}>
-      <Navbar />
-      
-      {/* TTS Banner */}
-      <TTSBanner />
+    <ScrollArea className="h-screen" style={!isNeo ? { backgroundColor: 'var(--app-bg)' } : { backgroundColor: '#ffffff' }}>
+      <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} text-black selection:bg-[#FEF08A] selection:text-black`}>
+        <Navbar />
 
-      {/* ── HERO PAGE ─────────────────────────────────── */}
-      <section className={`min-h-screen flex items-center ${settings.textToSpeech ? 'pt-36' : 'pt-24'} pb-12 px-4 overflow-hidden ${isNeo ? "border-b-8 border-black bg-white" : ""}`}>
-        <div className={`container mx-auto max-w-7xl transition-all duration-1000 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            {/* Left Column: Text Content */}
-            <div className="flex flex-col items-start text-left space-y-6 md:space-y-8 z-10">
-              <div className="flex flex-wrap justify-start gap-3">
-                <TTSText text="Neuro-Adaptive">
-                  <span className={s.tag}>NEURO-ADAPTIVE</span>
-                </TTSText>
-                <TTSText text="Shikshak 2.0">
-                  <span className={s.tagLight}>SHIKSHAK 2.0</span>
-                </TTSText>
+        {/* ── HERO PAGE ─────────────────────────────────── */}
+        <section className={`min-h-screen flex items-center pt-20 pb-12 px-4 ${isNeo ? "border-b-8 border-black bg-white" : ""}`}>
+          <div className={`container mx-auto max-w-6xl transition-all duration-1000 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+            
+            <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-6 md:space-y-8">
+              <div className="flex flex-wrap justify-center gap-3">
+                <span className={s.tag}>NEURO-ADAPTIVE</span>
+                <span className={s.tagLight}>SHIKSHAK 2.0</span>
               </div>
 
-              <AnimatedHeading delay={200} className={`${s.sectionTitle} text-5xl md:text-6xl lg:text-[5rem] xl:text-[6rem] leading-[1.1] md:leading-[1.05]`}>
-                <TTSText text="Personalized Learning for Every Child.">
-                  PERSONALIZED<br />
-                  LEARNING <br />
-                  <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4 mt-2 inline-block" : ""}>FOR EVERY</span><br />
-                  <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>CHILD.</span>
-                </TTSText>
+              <AnimatedHeading delay={200} className={`${s.sectionTitle} text-4xl md:text-7xl lg:text-8xl`}>
+                LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
+                <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>GROW WITHOUT FRICTION.</span>
               </AnimatedHeading>
               
-              <p className={`text-lg md:text-xl max-w-lg leading-relaxed ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
-                <TTSText text="We understand how your child learns and adapt education to match.">
-                  We understand how your child learns and adapt education to match.
-                </TTSText>
+              <p className={`text-lg md:text-2xl max-w-2xl leading-tight ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
+                Experience a vibrant, accessible platform designed specifically to support unique learning styles.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-8 pt-4">
                 <Link to="/tests" className={s.btnPrimary}>
                   START SCREENING <ArrowRight className="h-6 w-6" />
                 </Link>
@@ -205,230 +191,173 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Right Column: Image container with styling similar to reference */}
-            <div className="relative mt-8 lg:mt-0 w-full max-w-lg mx-auto lg:max-w-none lg:ml-auto">
-              {/* Background accent block */}
-              <div className={`absolute top-4 -right-4 md:-right-8 w-full h-[90%] bg-[#FEF08A] rounded-[2rem] transform rotate-3 ${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" : "shadow-xl opacity-60"}`}></div>
-              
-              {/* Main Image/Video container */}
-              <div className={`relative z-10 w-full overflow-hidden rounded-[2rem] bg-white transform -rotate-2 hover:rotate-0 transition-transform duration-500 ${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" : "border-4 border-white shadow-2xl"}`}>
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline
-                  className="w-full h-[350px] md:h-[450px] lg:h-[550px] object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
-                >
-                  <source src="/hero-video.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-                {/* Overlay texture if Neo */}
-                {isNeo && <div className="absolute inset-0 bg-black opacity-10 pointer-events-none mix-blend-overlay"></div>}
-              </div>
-              
-              {/* Floating decorative elements */}
-              <div className={`absolute -left-6 bottom-12 z-20 w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#86EFAC] flex items-center justify-center animate-bounce ${isNeo ? "border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "shadow-lg"}`}>
-                <Star className="h-8 w-8 md:h-10 md:w-10 text-black fill-black" />
-              </div>
-            </div>
           </div>
+        </section>
 
-        </div>
-      </section>
-
-      {/* ── CHILD HOME ENTRY ───────────────────────────── */}
-      <section className={`py-16 px-4 ${isNeo ? "border-b-8 border-black bg-[#D8B4FE]" : "bg-purple-50 border-b border-gray-200"}`}>
-        <div className="container mx-auto max-w-4xl text-center space-y-8">
-          <h2 className={`${s.sectionTitle} text-4xl md:text-6xl flex items-center justify-center gap-4`}>
-            Let’s Learn Your Way 🚀
-          </h2>
-          <p className={s.textBase}>We adapt learning based on how you understand best.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/tests" className={s.btnPrimary}>
-              START LEARNING <ArrowRight className="h-5 w-5" />
-            </Link>
-            <Link to="/learning" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
-              CONTINUE SESSION
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SCIENCE & STATS PAGE ──────────────────────── */}
-      <section className={`min-h-screen flex flex-col justify-center py-20 px-4 border-y ${isNeo ? "border-y-8 border-black bg-[#FDA4AF]" : "border-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--section-bg)' } : {}}>
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16 space-y-4">
-            <TTSText text="Research-Backed">
+        {/* ── SCIENCE & STATS PAGE ──────────────────────── */}
+        <section className={`min-h-screen flex flex-col justify-center py-20 px-4 border-y ${isNeo ? "border-y-8 border-black bg-[#FDA4AF]" : "border-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--section-bg)' } : {}}>
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16 space-y-4">
               <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>RESEARCH-BACKED</span>
-            </TTSText>
-            <h2 className={s.sectionTitle}>
-              <TTSText text="Built On Science.">BUILT ON SCIENCE.</TTSText>
-            </h2>
-            <p className={s.textMuted}>
-              <TTSText text="We combine cognitive science with modern, inclusive technology to create screening tools that don't overwhelm.">
+              <h2 className={s.sectionTitle}>BUILT ON SCIENCE.</h2>
+              <p className={s.textMuted}>
                 We combine cognitive science with modern, inclusive technology to create screening tools that don't overwhelm.
-              </TTSText>
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-12">
-            <StatCard icon={Brain} number="2+" label="Years" index={0} />
-            <StatCard icon={BookOpen} number="90%" label="Accuracy" index={1} />
-            <StatCard icon={CheckCircle} number="1.2M+" label="Users" index={2} />
-            <StatCard icon={Clock} number="10m" label="Quick" index={3} />
-          </div>
-
-          <div className={`${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-[#D8B4FE]" : "rounded-3xl shadow-sm border border-gray-200 bg-white"} p-6 md:p-10 flex flex-col md:flex-row justify-around items-center gap-6 divide-y md:divide-y-0 md:divide-x ${isNeo ? "divide-black divide-y-4 md:divide-x-8" : "divide-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
-            <div className="text-center px-4 w-full">
-              <div className="text-3xl md:text-5xl font-black text-black mb-1">1 in 10</div>
-              <div className="font-black uppercase tracking-wider text-xs md:text-sm">Signs of Dyslexia</div>
-            </div>
-            <div className="text-center px-4 w-full pt-4 md:pt-0">
-              <div className="text-3xl md:text-5xl font-black text-black mb-1">80%</div>
-              <div className="font-black uppercase tracking-wider text-xs md:text-sm">Undiagnosed</div>
-            </div>
-            <div className="text-center px-4 w-full pt-4 md:pt-0">
-              <div className="text-3xl md:text-5xl font-black text-black mb-1">30 min</div>
-              <div className="font-black uppercase tracking-wider text-xs md:text-sm">Fast Result</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── MISSION PAGE ─────────────────────────────── */}
-      <section id="mission" className="min-h-screen flex items-center py-20 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
-            <div className="lg:w-1/3 space-y-6 md:space-y-8">
-              <TTSText text="Our Mission">
-                <span className={s.tag}>OUR MISSION</span>
-              </TTSText>
-              <h2 className={s.sectionTitle}>
-                <TTSText text="Empowering Every Mind.">EMPOWERING EVERY MIND.</TTSText>
-              </h2>
-              <p className={s.textBase}>
-                <TTSText text="We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.">
-                  We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.
-                </TTSText>
               </p>
-              <div className="pt-2">
-                <Link to="/about" className={`text-black font-black text-xl md:text-2xl inline-flex items-center gap-2 hover:gap-6 transition-all border-b-8 ${isNeo ? "border-black bg-[#FEF08A] px-4" : "border-gray-300 pb-1 hover:border-black"}`}>
-                  READ FULL STORY <ArrowRight className="h-6 w-6" />
-                </Link>
-              </div>
             </div>
             
-            <div className="lg:w-2/3 grid sm:grid-cols-2 gap-4 md:gap-8">
-              <FeatureCard icon={Heart} title="Early Detection" description="Identify signs early when intervention works best." index={0} />
-              <FeatureCard icon={Users} title="Community" description="A supportive space for unique learners." index={1} />
-              <FeatureCard icon={Building} title="Growth" description="Continuous research for better learning." index={2} />
-              <div className={`${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-[#86EFAC]" : "rounded-3xl border border-gray-200 shadow-sm bg-white"} p-6 md:p-8 text-black flex flex-col justify-between hover:translate-x-2 transition-all`}>
-                <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                  <Globe className="h-6 w-6 text-black" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-black mb-2 uppercase">GLOBAL IMPACT</h3>
-                  <p className="font-bold text-base md:text-lg text-black/80">50,000+ users worldwide using our tools.</p>
-                </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-12">
+              <StatCard icon={Brain} number="2+" label="Years" index={0} />
+              <StatCard icon={BookOpen} number="90%" label="Accuracy" index={1} />
+              <StatCard icon={CheckCircle} number="1.2M+" label="Users" index={2} />
+              <StatCard icon={Clock} number="10m" label="Quick" index={3} />
+            </div>
+
+            <div className={`${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-[#D8B4FE]" : "rounded-3xl shadow-sm border border-gray-200 bg-white"} p-6 md:p-10 flex flex-col md:flex-row justify-around items-center gap-6 divide-y md:divide-y-0 md:divide-x ${isNeo ? "divide-black divide-y-4 md:divide-x-8" : "divide-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
+              <div className="text-center px-4 w-full">
+                <div className="text-3xl md:text-5xl font-black text-black mb-1">1 in 10</div>
+                <div className="font-black uppercase tracking-wider text-xs md:text-sm">Signs of Dyslexia</div>
+              </div>
+              <div className="text-center px-4 w-full pt-4 md:pt-0">
+                <div className="text-3xl md:text-5xl font-black text-black mb-1">80%</div>
+                <div className="font-black uppercase tracking-wider text-xs md:text-sm">Undiagnosed</div>
+              </div>
+              <div className="text-center px-4 w-full pt-4 md:pt-0">
+                <div className="text-3xl md:text-5xl font-black text-black mb-1">30 min</div>
+                <div className="font-black uppercase tracking-wider text-xs md:text-sm">Fast Result</div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── TESTIMONIALS PAGE ─────────────────────────── */}
-      <section className={`min-h-screen flex items-center py-20 px-4 border-y ${isNeo ? "border-y-8 border-black bg-[#FDBA74]" : "border-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--section-bg)' } : {}}>
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16 space-y-4">
-            <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>TESTIMONIALS</span>
-            <h2 className={s.sectionTitle}>REAL STORIES.</h2>
-            <p className={s.textMuted}>
-              Hear from students who found a better way to learn.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6 md:gap-10">
-            <TestimonialCard quote="Understanding my style made everything easier. Stress-free design." author="santhosh" role="Student" index={0} />
-            <TestimonialCard quote="A safe, supportive environment for my daughter." author="harshvardan" role="Parent" index={1} />
-            <TestimonialCard quote="Finally feel understood without the fatigue." author="bhuvi" role="Student" index={2} />
-          </div>
-        </div>
-      </section>
-
-      {/* ── CONTACT PAGE ──────────────────────────────── */}
-      <section id="contact" className="min-h-screen flex items-center py-20 px-4 bg-white">
-        <div className="container mx-auto max-w-5xl">
-          <div className={`${isNeo ? "border-8 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]" : "rounded-[3rem] border border-gray-200 shadow-sm"} overflow-hidden bg-white`}>
-            <div className="grid md:grid-cols-5 h-full">
-              <div className={`md:col-span-2 p-10 md:p-12 flex flex-col justify-between border-r ${isNeo ? "border-r-8 border-black bg-[#86EFAC]" : "border-gray-200 bg-gray-50"}`}>
-                <div>
-                  <h2 className={`text-3xl font-black text-black mb-6 uppercase tracking-tighter`}>CONTACT US.</h2>
-                  <p className={`text-lg mb-8 md:mb-12 font-black uppercase`}>Reach out anytime.</p>
-                  <div className="space-y-6 md:space-y-8">
-                    <div className="flex items-center gap-4 md:gap-6">
-                      <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center flex-shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                        <Mail className="h-5 w-5 text-black" />
-                      </div>
-                      <span className="font-black text-base md:text-xl">support@shikshak.edu</span>
-                    </div>
-                    <div className="flex items-center gap-4 md:gap-6">
-                      <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center flex-shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                        <Phone className="h-5 w-5 text-black" />
-                      </div>
-                      <span className="font-black text-base md:text-xl">+91 600 5609 423</span>
-                    </div>
-                  </div>
+        {/* ── MISSION PAGE ─────────────────────────────── */}
+        <section id="mission" className="min-h-screen flex items-center py-20 px-4 bg-white">
+          <div className="container mx-auto max-w-6xl">
+            <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+              <div className="lg:w-1/3 space-y-6 md:space-y-8">
+                <span className={s.tag}>OUR MISSION</span>
+                <h2 className={s.sectionTitle}>EMPOWERING EVERY MIND.</h2>
+                <p className={s.textBase}>
+                  We believe technology should adapt to the user. Our goal is to make identification accessible and provide neuro-friendly tools.
+                </p>
+                <div className="pt-2">
+                  <Link to="/about" className={`text-black font-black text-xl md:text-2xl inline-flex items-center gap-2 hover:gap-6 transition-all border-b-8 ${isNeo ? "border-black bg-[#FEF08A] px-4" : "border-gray-300 pb-1 hover:border-black"}`}>
+                    READ FULL STORY <ArrowRight className="h-6 w-6" />
+                  </Link>
                 </div>
               </div>
-              <div className="md:col-span-3 p-10 md:p-12">
-                <form onSubmit={handleContactSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="name" className={s.label}>NAME</label>
-                      <input id="name" name="name" value={contactForm.name} onChange={handleInputChange} placeholder="JANE DOE" required className={s.input} />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className={s.label}>EMAIL</label>
-                      <input id="email" name="email" type="email" value={contactForm.email} onChange={handleInputChange} placeholder="EMAIL@EXAMPLE.COM" required className={s.input} />
-                    </div>
+              
+              <div className="lg:w-2/3 grid sm:grid-cols-2 gap-4 md:gap-8">
+                <FeatureCard icon={Heart} title="Early Detection" description="Identify signs early when intervention works best." index={0} />
+                <FeatureCard icon={Users} title="Community" description="A supportive space for unique learners." index={1} />
+                <FeatureCard icon={Building} title="Growth" description="Continuous research for better learning." index={2} />
+                <div className={`${isNeo ? "border-8 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-[#86EFAC]" : "rounded-3xl border border-gray-200 shadow-sm bg-white"} p-6 md:p-8 text-black flex flex-col justify-between hover:translate-x-2 transition-all`}>
+                  <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                    <Globe className="h-6 w-6 text-black" />
                   </div>
                   <div>
-                    <label htmlFor="message" className={s.label}>MESSAGE</label>
-                    <textarea id="message" name="message" value={contactForm.message} onChange={handleInputChange} placeholder="HOW CAN WE HELP?" rows={3} required className={`${s.input} resize-none`} />
+                    <h3 className="text-2xl font-black mb-2 uppercase">GLOBAL IMPACT</h3>
+                    <p className="font-bold text-base md:text-lg text-black/80">50,000+ users worldwide using our tools.</p>
                   </div>
-                  <button type="submit" className={`${s.btnPrimary} w-full justify-center`}>
-                    SEND MESSAGE <Send className="h-5 w-5" />
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER PAGE ───────────────────────────────── */}
-      <footer className={`min-h-[50vh] flex items-center text-black border-t-8 border-black bg-white py-12 px-4`}>
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            {["NAVIGATE", "SUPPORT", "LEGAL", "CONNECT"].map((title, i) => (
-              <div key={title}>
-                <h3 className="font-black text-black mb-4 uppercase tracking-widest text-lg bg-[#FEF08A] inline-block px-2">{title}</h3>
-                <div className="space-y-2">
-                  <Link to="#" className="block font-black text-base hover:translate-x-2 transition-all">LINK ONE</Link>
-                  <Link to="#" className="block font-black text-base hover:translate-x-2 transition-all">LINK TWO</Link>
                 </div>
               </div>
-            ))}
-          </div>
-          <div className={`pt-8 border-t-8 border-black flex flex-col md:flex-row justify-between items-center gap-6`}>
-            <div className="flex items-center gap-4">
-              <div className={s.logo}>S</div>
-              <span className="text-3xl font-black text-black uppercase tracking-tighter">SHIKSHAK</span>
             </div>
-            <div className="font-black text-sm md:text-lg text-center md:text-left">© {new Date().getFullYear()} SHIKSHAK. NEURO-ADAPTIVE PLATFORM.</div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </section>
+
+        {/* ── TESTIMONIALS PAGE ─────────────────────────── */}
+        <section className={`min-h-screen flex items-center py-20 px-4 border-y ${isNeo ? "border-y-8 border-black bg-[#FDBA74]" : "border-gray-200"}`} style={!isNeo ? { backgroundColor: 'var(--section-bg)' } : {}}>
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16 space-y-4">
+              <span className={s.tagLight} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>TESTIMONIALS</span>
+              <h2 className={s.sectionTitle}>REAL STORIES.</h2>
+              <p className={s.textMuted}>
+                Hear from students who found a better way to learn.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6 md:gap-10">
+              <TestimonialCard quote="Understanding my style made everything easier. Stress-free design." author="Abhishek A R." role="Student" index={0} />
+              <TestimonialCard quote="A safe, supportive environment for my daughter." author="Sheetal Kumari." role="Parent" index={1} />
+              <TestimonialCard quote="Finally feel understood without the fatigue." author="Amay Verma" role="Student" index={2} />
+            </div>
+          </div>
+        </section>
+
+        {/* ── CONTACT PAGE ──────────────────────────────── */}
+        <section id="contact" className="min-h-screen flex items-center py-20 px-4 bg-white">
+          <div className="container mx-auto max-w-5xl">
+            <div className={`${isNeo ? "border-8 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]" : "rounded-[3rem] border border-gray-200 shadow-sm"} overflow-hidden bg-white`}>
+              <div className="grid md:grid-cols-5 h-full">
+                <div className={`md:col-span-2 p-10 md:p-12 flex flex-col justify-between border-r ${isNeo ? "border-r-8 border-black bg-[#86EFAC]" : "border-gray-200 bg-gray-50"}`}>
+                  <div>
+                    <h2 className={`text-3xl font-black text-black mb-6 uppercase tracking-tighter`}>CONTACT US.</h2>
+                    <p className={`text-lg mb-8 md:mb-12 font-black uppercase`}>Reach out anytime.</p>
+                    <div className="space-y-6 md:space-y-8">
+                      <div className="flex items-center gap-4 md:gap-6">
+                        <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center flex-shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                          <Mail className="h-5 w-5 text-black" />
+                        </div>
+                        <span className="font-black text-base md:text-xl">support@shikshak.edu</span>
+                      </div>
+                      <div className="flex items-center gap-4 md:gap-6">
+                        <div className={`w-12 h-12 bg-white border-4 border-black flex items-center justify-center flex-shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                          <Phone className="h-5 w-5 text-black" />
+                        </div>
+                        <span className="font-black text-base md:text-xl">+91 600 5609 423</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="md:col-span-3 p-10 md:p-12">
+                  <form onSubmit={handleContactSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="name" className={s.label}>NAME</label>
+                        <input id="name" name="name" value={contactForm.name} onChange={handleInputChange} placeholder="JANE DOE" required className={s.input} />
+                      </div>
+                      <div>
+                        <label htmlFor="email" className={s.label}>EMAIL</label>
+                        <input id="email" name="email" type="email" value={contactForm.email} onChange={handleInputChange} placeholder="EMAIL@EXAMPLE.COM" required className={s.input} />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="message" className={s.label}>MESSAGE</label>
+                      <textarea id="message" name="message" value={contactForm.message} onChange={handleInputChange} placeholder="HOW CAN WE HELP?" rows={3} required className={`${s.input} resize-none`} />
+                    </div>
+                    <button type="submit" className={`${s.btnPrimary} w-full justify-center`}>
+                      SEND MESSAGE <Send className="h-5 w-5" />
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FOOTER PAGE ───────────────────────────────── */}
+        <footer className={`min-h-[50vh] flex items-center text-black border-t-8 border-black bg-white py-12 px-4`}>
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+              {["NAVIGATE", "SUPPORT", "LEGAL", "CONNECT"].map((title, i) => (
+                <div key={title}>
+                  <h3 className="font-black text-black mb-4 uppercase tracking-widest text-lg bg-[#FEF08A] inline-block px-2">{title}</h3>
+                  <div className="space-y-2">
+                    <Link to="#" className="block font-black text-base hover:translate-x-2 transition-all">LINK ONE</Link>
+                    <Link to="#" className="block font-black text-base hover:translate-x-2 transition-all">LINK TWO</Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className={`pt-8 border-t-8 border-black flex flex-col md:flex-row justify-between items-center gap-6`}>
+              <div className="flex items-center gap-4">
+                <div className={s.logo}>S</div>
+                <span className="text-3xl font-black text-black uppercase tracking-tighter">SHIKSHAK</span>
+              </div>
+              <div className="font-black text-sm md:text-lg text-center md:text-left">© {new Date().getFullYear()} SHIKSHAK. NEURO-ADAPTIVE PLATFORM.</div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </ScrollArea>
   );
 };
 
