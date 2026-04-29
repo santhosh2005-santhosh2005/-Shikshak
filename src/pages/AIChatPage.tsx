@@ -214,9 +214,9 @@ const AIChatPage = () => {
         <Navbar />
         <TTSBanner />
 
-        <div className={`flex-1 flex flex-col w-full max-w-4xl mx-auto ${settings.textToSpeech ? 'pt-32' : 'pt-16'} transition-all`}>
+        <div className={`flex-1 flex flex-col w-full max-w-4xl mx-auto ${settings.textToSpeech ? 'pt-32' : 'pt-16'} transition-all overflow-hidden`}>
           {/* Chat Area */}
-          <ScrollArea className="flex-1 px-4">
+          <div className="flex-1 overflow-y-auto px-4 custom-scrollbar">
             {messages.length === 0 ? (
               <div className="h-full min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
                 <motion.h1 
@@ -281,7 +281,7 @@ const AIChatPage = () => {
                 <div ref={messagesEndRef} className="h-32" />
               </div>
             )}
-          </ScrollArea>
+          </div>
 
           {/* Input Bar Section */}
           <div className="p-4 md:p-8 w-full max-w-4xl mx-auto">
