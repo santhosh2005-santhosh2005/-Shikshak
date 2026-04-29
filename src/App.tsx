@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import PrismaLanding from "./pages/PrismaLanding";
 import About from "./pages/About";
 import Tests from "./pages/Tests";
 import ReadingTest from "./pages/ReadingTest";
@@ -28,10 +29,12 @@ import NotFound from "./pages/NotFound";
 import SupportResourcesPage from "./pages/SupportResourcesPage";
 import ImproveDyslexiaPage from "./pages/ImproveDyslexiaPage";
 import AIChatPage from "./pages/AIChatPage";
+import Profile from "./pages/Profile";
 import RoleSelection from "./pages/auth/RoleSelection";
 import StudentSignup from "./pages/auth/StudentSignup";
 import StudentLogin from "./pages/auth/StudentLogin";
 import TeacherAuth from "./pages/auth/TeacherAuth";
+import ParentAuth from "./pages/auth/ParentAuth";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import { 
   AccessibilityProvider, 
@@ -42,7 +45,9 @@ import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 'student' | 'teacher' }) => {
   const { user, session } = useAuth();
-  if (!session && !user) {
+  const isDemoMode = localStorage.getItem("shikshak_demo_mode") === "true";
+
+  if (!session && !user && !isDemoMode) {
     return <Navigate to="/auth/role-selection" replace />;
   }
   return <>{children}</>;
@@ -61,7 +66,8 @@ const App = () => (
         <AccessibilitySettings />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<PrismaLanding />} />
+            <Route path="/home" element={<Index />} />
             <Route path="/about" element={<About />} />
             
             {/* Auth Routes */}
@@ -69,6 +75,7 @@ const App = () => (
             <Route path="/auth/signup" element={<StudentSignup />} />
             <Route path="/auth/login" element={<StudentLogin />} />
             <Route path="/auth/teacher-login" element={<TeacherAuth />} />
+            <Route path="/auth/parent-auth" element={<ParentAuth />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
             {/* Protected Student Routes */}
@@ -91,11 +98,13 @@ const App = () => (
             <Route path="/support" element={<ProtectedRoute role="student"><SupportResourcesPage /></ProtectedRoute>} />
             <Route path="/improve" element={<ProtectedRoute role="student"><ImproveDyslexiaPage /></ProtectedRoute>} />
             <Route path="/ai-chat" element={<ProtectedRoute role="student"><AIChatPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
             {/* Protected Teacher Routes */}
             <Route path="/teacher-dashboard" element={<ProtectedRoute role="teacher"><TeacherDashboard /></ProtectedRoute>} />
             
-            <Route path="/parent-digest" element={<ParentDigest />} />
+            {/* Protected Parent Routes */}
+            <Route path="/parent-digest" element={<ProtectedRoute role="parent"><ParentDigest /></ProtectedRoute>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

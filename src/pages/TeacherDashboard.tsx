@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -50,6 +51,7 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 const TeacherDashboard = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [teacherProfile, setTeacherProfile] = useState<any>(null);
   const [students, setStudents] = useState<any[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
@@ -62,7 +64,26 @@ const TeacherDashboard = () => {
   }, [user]);
 
   const fetchTeacherData = async () => {
-    if (!user) return;
+    // --- Handle Demo Mode Bypass ---
+    const isDemoMode = localStorage.getItem("shikshak_demo_mode") === "true";
+    if (isDemoMode) {
+      const demoTeacher = JSON.parse(localStorage.getItem("shikshak_demo_teacher") || "{}");
+      setTeacherProfile(demoTeacher);
+      // In demo mode, we use the mock students data already in memory or fetch mock from logic
+      setStudents([
+        { id: '1', full_name: "Alex Johnson", class_grade: "Class 10", school_name: "Shikshak Academy", learning_needs: ["Dyslexia"] },
+        { id: '2', full_name: "Sam Smith", class_grade: "Class 10", school_name: "Shikshak Academy", learning_needs: ["ADHD"] },
+        { id: '3', full_name: "Maya Patel", class_grade: "Class 10", school_name: "Shikshak Academy", learning_needs: ["Autism"] },
+        { id: '4', full_name: "Santhosh D", class_grade: "Class 10", school_name: "Shikshak Academy", learning_needs: ["Slow Learning"] },
+      ]);
+      setLoading(false);
+      return;
+    }
+
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       // 1. Get Teacher Profile
@@ -103,6 +124,18 @@ const TeacherDashboard = () => {
   const handleDownloadReport = () => {
     toast.success(`Generating premium report for ${selectedStudent?.full_name}...`);
     // In a real app, use jspdf or a backend service
+  };
+
+  const handleSignOut = async () => {
+    try {
+      localStorage.removeItem("shikshak_demo_mode");
+      localStorage.removeItem("shikshak_demo_teacher");
+      await signOut();
+    } catch (error) {
+      console.error("Sign out error:", error);
+    } finally {
+      navigate("/auth/role-selection", { replace: true });
+    }
   };
 
   if (loading) return <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center"><Loader /></div>;
@@ -192,7 +225,7 @@ const TeacherDashboard = () => {
               <p className="text-xs font-bold text-[#1E293B] truncate">{teacherProfile?.full_name}</p>
               <p className="text-[10px] text-[#64748B] truncate">{teacherProfile?.school_name}</p>
             </div>
-            <button onClick={() => signOut()} className="text-[#64748B] hover:text-rose-600 transition-colors">
+            <button onClick={handleSignOut} className="text-[#64748B] hover:text-rose-600 transition-colors">
               <LogOut className="w-4 h-4" />
             </button>
           </div>

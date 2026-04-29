@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useAccessibility, AccessibilitySettings } from "@/components/AccessibilitySettings";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,6 +15,7 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { settings } = useAccessibility();
+  const { t } = useTranslation();
   const isNeo = settings.uiTheme === "neo";
   const isHomePage = location.pathname === "/";
 
@@ -26,17 +28,29 @@ export const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { text: "Home", href: "/" },
-    { text: "Start Learning", href: "/tests" },
-    { text: "Progress", href: "/improve" },
-    { text: "AI Chat", href: "/ai-chat" },
-    { text: "Dashboard", href: "/teacher-dashboard" },
-    { text: "Report", href: "/parent-digest" },
-    { text: "Support", href: "/support" },
-    { text: "About", href: "/about" },
+    { text: t.nav.home, href: "/" },
+    { text: t.nav.startLearning, href: "/tests" },
+    { text: t.nav.progress, href: "/improve" },
+    { text: t.nav.aiChat, href: "/ai-chat" },
+    { text: t.nav.dashboard, href: "/teacher-dashboard" },
+    { text: t.nav.report, href: "/parent-digest" },
+    { text: t.nav.support, href: "/support" },
+    { text: t.nav.about, href: "/about" },
   ];
 
   const isActive = (href: string) => location.pathname === href;
+
+  const handleSignOut = async () => {
+    try {
+      localStorage.removeItem("shikshak_demo_mode");
+      localStorage.removeItem("shikshak_demo_teacher");
+      await signOut();
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      navigate("/auth/role-selection", { replace: true });
+    }
+  };
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
@@ -69,15 +83,26 @@ export const Navbar = () => {
             
             <div className="ml-4 flex items-center space-x-2 border-l pl-4 border-black/10">
               <AccessibilitySettings showFloatingButton={false} />
-              {user ? (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => signOut()}
-                  className={isNeo ? "border-4 border-black font-black uppercase rounded-none" : "rounded-xl"}
-                >
-                  Sign Out
-                </Button>
+              {user || localStorage.getItem("shikshak_demo_mode") === "true" ? (
+                <>
+                  <Link to="/profile">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={isNeo ? "font-black uppercase" : "font-bold"}
+                    >
+                      Profile
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleSignOut}
+                    className={isNeo ? "border-4 border-black font-black uppercase rounded-none" : "font-bold border-[#E2E8F0] rounded-xl"}
+                  >
+                    Sign Out
+                  </Button>
+                </>
               ) : (
                 <Link to="/signin">
                   <Button 
@@ -128,8 +153,8 @@ export const Navbar = () => {
                   </Link>
                 ))}
                 <div className="pt-4 border-t border-black/10 flex flex-col gap-2">
-                  {user ? (
-                     <Button variant="outline" className={isNeo ? "border-4 border-black font-black rounded-none" : "rounded-xl"} onClick={() => signOut()}>Sign Out</Button>
+                  {user || localStorage.getItem("shikshak_demo_mode") === "true" ? (
+                     <Button variant="outline" className={isNeo ? "border-4 border-black font-black rounded-none" : "rounded-xl"} onClick={handleSignOut}>Sign Out</Button>
                   ) : (
                     <Link to="/signin" onClick={() => setIsMenuOpen(false)}>
                       <Button className={`w-full ${isNeo ? "border-4 border-black font-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "rounded-xl"}`}>Sign In</Button>

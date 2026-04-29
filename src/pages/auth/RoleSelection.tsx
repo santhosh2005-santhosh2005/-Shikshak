@@ -15,6 +15,7 @@ const RoleSelection = () => {
       description: "Access your personalized learning dashboard and assessments.",
       icon: GraduationCap,
       active: true,
+      buttonText: "Continue as Student",
       color: "bg-indigo-50 text-indigo-600",
       hoverColor: "hover:border-indigo-400",
     },
@@ -23,9 +24,10 @@ const RoleSelection = () => {
       title: "Parent",
       description: "Monitor progress and receive insights about your child's learning.",
       icon: Users,
-      active: false,
-      color: "bg-slate-50 text-slate-400",
-      hoverColor: "",
+      active: true,
+      buttonText: "Continue as Parent",
+      color: "bg-teal-50 text-teal-600",
+      hoverColor: "hover:border-teal-400",
     },
     {
       id: "teacher",
@@ -33,6 +35,7 @@ const RoleSelection = () => {
       description: "Manage classes and track student performance with AI insights.",
       icon: User,
       active: true,
+      buttonText: "Continue as Teacher",
       color: "bg-purple-50 text-purple-600",
       hoverColor: "hover:border-purple-400",
     },
@@ -44,17 +47,33 @@ const RoleSelection = () => {
         navigate("/auth/signup");
       } else if (roleId === "teacher") {
         navigate("/auth/teacher-login");
+      } else if (roleId === "parent") {
+        navigate("/auth/parent-auth");
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-4">
+    <div className="relative min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-4 overflow-hidden">
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/background-video.mp4" type="video/mp4" />
+      </video>
+
+      {/* Glassmorphism Overlay */}
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-10" />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="max-w-4xl w-full text-center space-y-8"
+        className="relative z-20 max-w-4xl w-full text-center space-y-8"
       >
         <div className="space-y-2">
           <h1 className="text-4xl md:text-5xl font-bold text-[#1E293B]">
@@ -97,9 +116,13 @@ const RoleSelection = () => {
                   <div className="pt-4 w-full">
                     <Button
                       variant="ghost"
-                      className="w-full text-[#6366F1] hover:text-[#6366F1] hover:bg-indigo-50 group"
+                      className={`w-full group font-bold ${
+                        role.id === 'student' ? "text-indigo-600 hover:bg-indigo-50" : 
+                        role.id === 'parent' ? "text-teal-600 hover:bg-teal-50" : 
+                        "text-purple-600 hover:bg-purple-50"
+                      }`}
                     >
-                      Continue as Student
+                      {role.buttonText}
                       <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>

@@ -20,9 +20,10 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['var(--font-sans)', 'Inter', 'sans-serif'],
-				heading: ['var(--font-sans)', 'Space Grotesk', 'sans-serif'],
+				sans: ['Almarai', 'var(--font-sans)', 'Inter', 'sans-serif'],
+				heading: ['Space Grotesk', 'sans-serif'],
 				dyslexic: ['OpenDyslexic', 'sans-serif'],
+				serif: ['"Instrument Serif"', 'serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -31,7 +32,7 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
+					DEFAULT: '#DEDBC8',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
@@ -73,7 +74,7 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
-				'2xl': '1rem',
+				'2xl': '2rem',
 			},
 			keyframes: {
 				'accordion-down': {

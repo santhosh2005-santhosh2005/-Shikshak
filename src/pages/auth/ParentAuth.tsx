@@ -14,9 +14,9 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { School, ArrowLeft, Loader2, Lock, Mail, User, BookOpen } from "lucide-react";
+import { Heart, ArrowLeft, Loader2, Lock, Mail, User, GraduationCap, School } from "lucide-react";
 
-const TeacherAuth = () => {
+const ParentAuth = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -24,8 +24,10 @@ const TeacherAuth = () => {
     fullName: "",
     email: "",
     password: "",
+    studentName: "",
     schoolName: "",
-    classAssigned: ""
+    studentClass: "",
+    relationship: ""
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,8 +35,8 @@ const TeacherAuth = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleClassChange = (value: string) => {
-    setFormData(prev => ({ ...prev, classAssigned: value }));
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -42,18 +44,19 @@ const TeacherAuth = () => {
     setLoading(true);
 
     // --- Demo Bypass for Network Issues ---
-    if (formData.email.trim() === "teacher@shikshak.com" && formData.password === "password123") {
-      toast.success("Entering Demo Mode (Bypassing Supabase)...");
+    if (formData.email.trim() === "parent@shikshak.com" && formData.password === "password123") {
+      toast.success("Entering Parent Demo Mode...");
       localStorage.setItem("shikshak_demo_mode", "true");
-      localStorage.setItem("shikshak_demo_teacher", JSON.stringify({
-        full_name: formData.fullName || "Prof. Shikshak",
+      localStorage.setItem("shikshak_demo_parent", JSON.stringify({
+        full_name: formData.fullName || "John Doe (Parent)",
+        student_name: formData.studentName || "Alex Student",
         school_name: formData.schoolName || "Shikshak Academy",
-        class_assigned: formData.classAssigned || "Class 10",
-        email: "teacher@shikshak.com"
+        student_class: formData.studentClass || "Class 10",
+        relationship: formData.relationship || "Guardian",
+        email: "parent@shikshak.com"
       }));
-      // Wait a bit to simulate loading
       setTimeout(() => {
-        navigate("/teacher-dashboard");
+        navigate("/parent-digest");
         setLoading(false);
       }, 1000);
       return;
@@ -61,23 +64,21 @@ const TeacherAuth = () => {
 
     try {
       if (isLogin) {
-        // Teacher Login
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email.trim(),
           password: formData.password,
         });
         if (error) throw error;
-        toast.success("Welcome back, Teacher!");
-        navigate("/teacher-dashboard");
+        toast.success("Welcome back, Parent!");
+        navigate("/parent-digest");
       } else {
-        // Teacher Signup
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.email.trim(),
           password: formData.password,
           options: {
             data: {
               full_name: formData.fullName,
-              role: 'teacher'
+              role: 'parent'
             }
           }
         });
@@ -86,23 +87,25 @@ const TeacherAuth = () => {
 
         if (authData.user) {
           const { error: profileError } = await supabase
-            .from('teachers')
+            .from('parents')
             .insert([
               {
                 id: authData.user.id,
                 full_name: formData.fullName,
                 email: formData.email.trim(),
+                student_name: formData.studentName,
                 school_name: formData.schoolName,
-                class_assigned: formData.classAssigned,
-                role: 'teacher'
+                student_class: formData.studentClass,
+                relationship: formData.relationship,
+                role: 'parent'
               }
             ]);
 
-          if (profileError) console.error("Teacher profile error:", profileError);
+          if (profileError) console.error("Parent profile error:", profileError);
 
           if (authData.session) {
-            toast.success("Teacher account created!");
-            navigate("/teacher-dashboard");
+            toast.success("Parent account created!");
+            navigate("/parent-digest");
           } else {
             toast.success("Signup successful! Please confirm your email.");
             setIsLogin(true);
@@ -119,7 +122,7 @@ const TeacherAuth = () => {
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/teacher-dashboard` }
+      options: { redirectTo: `${window.location.origin}/parent-digest` }
     });
     if (error) toast.error(error.message);
   };
@@ -137,13 +140,13 @@ const TeacherAuth = () => {
 
         <div className="text-center space-y-2">
           <div className="bg-white p-3 rounded-2xl shadow-sm inline-block mb-4 border border-[#E2E8F0]">
-            <School className="w-8 h-8 text-[#8B5CF6]" />
+            <Heart className="w-8 h-8 text-[#14B8A6]" />
           </div>
           <h1 className="text-3xl font-bold text-[#1E293B]">
-            {isLogin ? "Teacher Login" : "Teacher Registration"}
+            {isLogin ? "Parent Login" : "Parent Registration"}
           </h1>
           <p className="text-[#64748B]">
-            {isLogin ? "Manage your classroom and track student progress." : "Join Shikshak to empower your students with AI."}
+            {isLogin ? "Monitor your child's learning journey." : "Join Shikshak to support your child's growth."}
           </p>
         </div>
 
@@ -164,13 +167,13 @@ const TeacherAuth = () => {
                     className="space-y-4"
                   >
                     <div className="space-y-2">
-                      <Label htmlFor="fullName">Full Name</Label>
+                      <Label htmlFor="fullName">Parent Full Name</Label>
                       <div className="relative">
                         <User className="absolute left-3 top-3 w-5 h-5 text-[#64748B]" />
                         <Input 
                           id="fullName" 
                           name="fullName"
-                          placeholder="Prof. John Doe" 
+                          placeholder="John Doe" 
                           required={!isLogin}
                           value={formData.fullName}
                           onChange={handleInputChange}
@@ -179,31 +182,58 @@ const TeacherAuth = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="schoolName">School Name</Label>
+                      <Label htmlFor="studentName">Student Name</Label>
                       <div className="relative">
-                        <School className="absolute left-3 top-3 w-5 h-5 text-[#64748B]" />
+                        <GraduationCap className="absolute left-3 top-3 w-5 h-5 text-[#64748B]" />
                         <Input 
-                          id="schoolName" 
-                          name="schoolName"
-                          placeholder="Enter your school name" 
+                          id="studentName" 
+                          name="studentName"
+                          placeholder="Child's full name" 
                           required={!isLogin}
-                          value={formData.schoolName}
+                          value={formData.studentName}
                           onChange={handleInputChange}
                           className="pl-10 rounded-xl border-[#E2E8F0] h-12"
                         />
                       </div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="schoolName">School Name</Label>
+                        <Input 
+                          id="schoolName" 
+                          name="schoolName"
+                          placeholder="School name" 
+                          required={!isLogin}
+                          value={formData.schoolName}
+                          onChange={handleInputChange}
+                          className="rounded-xl border-[#E2E8F0] h-12"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="studentClass">Student Class</Label>
+                        <Select onValueChange={(v) => handleSelectChange("studentClass", v)} required={!isLogin}>
+                          <SelectTrigger className="rounded-xl border-[#E2E8F0] h-12">
+                            <SelectValue placeholder="Select Class" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 12 }, (_, i) => (
+                              <SelectItem key={i + 1} value={`Class ${i + 1}`}>
+                                Class {i + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
                     <div className="space-y-2">
-                      <Label htmlFor="classAssigned">Class Assigned</Label>
-                      <Select onValueChange={handleClassChange} required={!isLogin}>
+                      <Label htmlFor="relationship">Relationship</Label>
+                      <Select onValueChange={(v) => handleSelectChange("relationship", v)} required={!isLogin}>
                         <SelectTrigger className="rounded-xl border-[#E2E8F0] h-12">
-                          <SelectValue placeholder="Select Class" />
+                          <SelectValue placeholder="Select Relationship" />
                         </SelectTrigger>
                         <SelectContent>
-                          {Array.from({ length: 12 }, (_, i) => (
-                            <SelectItem key={i + 1} value={`Class ${i + 1}`}>
-                              Class {i + 1}
-                            </SelectItem>
+                          {["Mother", "Father", "Guardian", "Elder Brother", "Elder Sister", "Other"].map(r => (
+                            <SelectItem key={r} value={r}>{r}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -220,7 +250,7 @@ const TeacherAuth = () => {
                     id="email" 
                     name="email"
                     type="email" 
-                    placeholder="teacher@school.edu" 
+                    placeholder="parent@home.com" 
                     required 
                     value={formData.email}
                     onChange={handleInputChange}
@@ -233,7 +263,7 @@ const TeacherAuth = () => {
                 <div className="flex justify-between items-center">
                   <Label htmlFor="password">Password</Label>
                   {isLogin && (
-                    <Link to="/auth/forgot-password" size="sm" className="text-xs text-[#8B5CF6] hover:underline font-medium">
+                    <Link to="/auth/forgot-password" size="sm" className="text-xs text-[#14B8A6] hover:underline font-medium">
                       Forgot Password?
                     </Link>
                   )}
@@ -256,13 +286,13 @@ const TeacherAuth = () => {
               <div className="space-y-4 pt-2">
                 <Button 
                   type="submit" 
-                  className="w-full h-12 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="w-full h-12 rounded-xl bg-[#14B8A6] hover:bg-[#0D9488] text-white font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
                   disabled={loading}
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    isLogin ? "Login to Dashboard" : "Create Teacher Account"
+                    isLogin ? "Login to Dashboard" : "Create Parent Account"
                   )}
                 </Button>
                 
@@ -293,10 +323,10 @@ const TeacherAuth = () => {
             </form>
 
             <p className="text-center text-sm text-[#64748B] mt-8">
-              {isLogin ? "Need a teacher account?" : "Already have an account?"}{" "}
+              {isLogin ? "Need a parent account?" : "Already have an account?"}{" "}
               <button 
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-[#8B5CF6] font-semibold hover:underline"
+                className="text-[#14B8A6] font-semibold hover:underline"
               >
                 {isLogin ? "Sign up" : "Login"}
               </button>
@@ -308,4 +338,4 @@ const TeacherAuth = () => {
   );
 };
 
-export default TeacherAuth;
+export default ParentAuth;
