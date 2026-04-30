@@ -8,7 +8,7 @@ import {
   Activity, BookOpen, TrendingUp, Download, LayoutDashboard,
   Settings, LogOut, Filter, BarChart3, PieChart as PieChartIcon,
   LineChart as LineChartIcon, Star, Award, Zap, MessageSquare,
-  ChevronDown, ArrowUpRight, GraduationCap
+  ChevronDown, ArrowUpRight, GraduationCap, CheckCircle2, Loader2
 } from "lucide-react";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -544,7 +544,5 @@ const Loader = () => (
     <p className="text-sm font-bold text-[#64748B] animate-pulse uppercase tracking-widest">Loading Dashboard...</p>
   </div>
 );
-
-import { Loader2 } from "lucide-react";
 
 export default TeacherDashboard;
