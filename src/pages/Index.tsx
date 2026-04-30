@@ -4,6 +4,7 @@ import { ArrowRight, Globe, Users, Mail, Phone, Heart, Building, Send, Brain, Bo
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { Navbar } from "@/components/Navbar";
 import { useAccessibility } from "@/components/AccessibilitySettings";
+import { TTSText, TTSBanner } from "@/components/TTSText";
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -175,12 +176,16 @@ const Index = () => {
                 </div>
 
               <AnimatedHeading delay={200} className={`${s.sectionTitle} text-4xl md:text-7xl lg:text-8xl`}>
-                LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
-                <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>GROW WITHOUT FRICTION.</span>
+                <TTSText text="LEARN WITHOUT LIMITS. GROW WITHOUT FRICTION.">
+                  LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
+                  <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>GROW WITHOUT FRICTION.</span>
+                </TTSText>
               </AnimatedHeading>
               
               <p className={`text-lg md:text-2xl max-w-2xl leading-tight ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
-                Experience a vibrant, accessible platform designed specifically to support unique learning styles.
+                <TTSText text="Experience a vibrant, accessible platform designed specifically to support unique learning styles.">
+                  Experience a vibrant, accessible platform designed specifically to support unique learning styles.
+                </TTSText>
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">

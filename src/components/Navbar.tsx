@@ -30,6 +30,7 @@ export const Navbar = () => {
     { text: "Start Learning", href: "/tests" },
     { text: "Improve", href: "/improve" },
     { text: "AI Chat", href: "/ai-chat" },
+    { text: "Course", href: "/course" },
     { text: "Dashboard", href: "/teacher-dashboard" },
     { text: "Report", href: "/parent-digest" },
     { text: "Support", href: "/support" },

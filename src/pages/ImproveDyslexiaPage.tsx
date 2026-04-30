@@ -23,6 +23,7 @@ import {
   X
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { TTSText, TTSBanner } from "@/components/TTSText";
 
 type Level = "home" | "mild" | "moderate" | "severe";
 type GameType = "word-sort" | "flash-word" | "letter-match" | "phoneme-builder" | "audio-dictation" | "syllable-tap" | "sound-match" | "focus-line" | "word-trace";
@@ -35,33 +36,10 @@ const ImproveDyslexiaPage = () => {
   const s = getStyles(settings.uiTheme);
 
   const speak = (text: string) => {
-    if ('speechSynthesis' in window) {
-      stopReading();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8;
-      speechSynthesis.speak(utterance);
-    }
+    readText(text);
   };
 
-  // Clickable TTS text wrapper component
-  const TTSText = ({ text, children, className = "" }: { text: string; children: React.ReactNode; className?: string }) => {
-    if (!settings.textToSpeech) {
-      return <span className={className}>{children}</span>;
-    }
-    
-    return (
-      <span 
-        className={`${className} cursor-pointer hover:bg-yellow-200/50 hover:underline decoration-wavy transition-all rounded px-1`}
-        onClick={(e) => {
-          e.stopPropagation();
-          speak(text);
-        }}
-        title="Click to hear this text"
-      >
-        {children}
-      </span>
-    );
-  };
+  // Using standard TTSText for consistency
 
   // --- GAME COMPONENTS ---
 
@@ -740,18 +718,6 @@ const ImproveDyslexiaPage = () => {
     <ScrollArea className="h-screen bg-transparent">
       <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} pb-40`}>
         <Navbar />
-        
-        {/* TTS ENABLED INFO BANNER */}
-        {settings.textToSpeech && (
-          <div className={`fixed top-20 left-0 right-0 z-30 ${isNeo ? "bg-yellow-300 border-b-4 border-black" : "bg-gradient-to-r from-blue-50 to-purple-50 border-b-2 border-blue-200"} px-4 py-3 shadow-lg`}>
-            <div className="container mx-auto max-w-7xl flex items-center justify-center gap-3">
-              <Volume2 className={`h-5 w-5 ${isNeo ? "text-black" : "text-blue-600"} animate-pulse`} />
-              <span className={`font-bold text-sm ${isNeo ? "text-black" : "text-blue-800"}`}>
-                🔊 TTS ENABLED — Click on ANY highlighted text to hear it spoken aloud!
-              </span>
-            </div>
-          </div>
-        )}
 
         <div className={`container mx-auto ${settings.textToSpeech ? 'pt-36' : 'pt-20'} px-4 max-w-7xl`}>
           {currentLevel !== "home" && (

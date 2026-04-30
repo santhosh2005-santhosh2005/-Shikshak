@@ -29,6 +29,7 @@ import NotFound from "./pages/NotFound";
 import SupportResourcesPage from "./pages/SupportResourcesPage";
 import ImproveDyslexiaPage from "./pages/ImproveDyslexiaPage";
 import AIChatPage from "./pages/AIChatPage";
+import CourseRoom from "./pages/CourseRoom";
 import Profile from "./pages/Profile";
 import RoleSelection from "./pages/auth/RoleSelection";
 import StudentSignup from "./pages/auth/StudentSignup";
@@ -40,6 +41,7 @@ import {
   AccessibilityProvider, 
   AccessibilitySettings
 } from "./components/AccessibilitySettings";
+import { TTSBanner } from "./components/TTSText";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Navigate } from "react-router-dom";
 
@@ -68,6 +70,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <AccessibilitySettings />
+        <TTSBanner />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LandingRedirect />} />
@@ -102,6 +105,7 @@ const App = () => (
             <Route path="/support" element={<ProtectedRoute role="student"><SupportResourcesPage /></ProtectedRoute>} />
             <Route path="/improve" element={<ProtectedRoute role="student"><ImproveDyslexiaPage /></ProtectedRoute>} />
             <Route path="/ai-chat" element={<ProtectedRoute role="student"><AIChatPage /></ProtectedRoute>} />
+            <Route path="/course" element={<ProtectedRoute role="student"><CourseRoom /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
             {/* Protected Teacher Routes */}

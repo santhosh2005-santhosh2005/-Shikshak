@@ -236,37 +236,47 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const readText = (text: string) => {
-    if (speechSynthesis && settings.textToSpeech) {
-      // Stop any current reading
-      stopReading();
-      
-      // Create new utterance
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    
+    // Stop any current reading
+    window.speechSynthesis.cancel();
+    
+    if (!settings.textToSpeech) return;
+    
+    // Small timeout to ensure cancel() has taken effect in all browsers
+    setTimeout(() => {
       const newUtterance = new SpeechSynthesisUtterance(text);
-      newUtterance.rate = 0.8; // Slower rate for dyslexic users
+      
+      // Select a natural voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = 
+        voices.find(v => v.name.includes("Google US English") && v.lang === "en-US") ||
+        voices.find(v => v.name.includes("Natural") && v.lang.startsWith("en")) ||
+        voices.find(v => v.lang.startsWith("en")) ||
+        voices[0];
+        
+      if (preferredVoice) {
+        newUtterance.voice = preferredVoice;
+      }
+      
+      newUtterance.rate = 0.85; // Slightly slower for better clarity
       newUtterance.pitch = 1;
       newUtterance.volume = 1;
       
-      setUtterance(newUtterance);
-      setIsReading(true);
-      
-      // Set up event handlers
-      newUtterance.onend = () => {
+      newUtterance.onstart = () => setIsReading(true);
+      newUtterance.onend = () => setIsReading(false);
+      newUtterance.onerror = (event) => {
+        console.error("SpeechSynthesis error:", event);
         setIsReading(false);
       };
       
-      newUtterance.onerror = () => {
-        setIsReading(false);
-        console.error("Speech synthesis error");
-      };
-      
-      // Start speaking
-      speechSynthesis.speak(newUtterance);
-    }
+      window.speechSynthesis.speak(newUtterance);
+    }, 50);
   };
 
   const stopReading = () => {
-    if (speechSynthesis) {
-      speechSynthesis.cancel();
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
       setIsReading(false);
     }
   };
