@@ -176,21 +176,24 @@ const Index = () => {
                 </div>
 
               <AnimatedHeading delay={200} className={`${s.sectionTitle} text-4xl md:text-7xl lg:text-8xl`}>
-                <TTSText text="LEARN WITHOUT LIMITS. GROW WITHOUT FRICTION.">
-                  LEARN WITHOUT <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>LIMITS.</span><br />
-                  <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>GROW WITHOUT FRICTION.</span>
+                <TTSText text="Personalized Learning for Every Child">
+                  Personalized <span className={isNeo ? "bg-[#FEF08A] px-2 md:px-4" : ""}>Learning</span><br />
+                  <span className={isNeo ? "bg-[#86EFAC] px-2 md:px-4 mt-2 inline-block" : "text-gray-500"}>for Every Child</span>
                 </TTSText>
               </AnimatedHeading>
               
               <p className={`text-lg md:text-2xl max-w-2xl leading-tight ${isNeo ? "font-black text-black uppercase" : "text-gray-600"}`}>
-                <TTSText text="Experience a vibrant, accessible platform designed specifically to support unique learning styles.">
-                  Experience a vibrant, accessible platform designed specifically to support unique learning styles.
+                <TTSText text="We understand how your child learns and adapt education to match.">
+                  We understand how your child learns and adapt education to match.
                 </TTSText>
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
                 <Link to="/tests" className={s.btnPrimary}>
                   START SCREENING <ArrowRight className="h-6 w-6" />
+                </Link>
+                <Link to="/learning-mode" className={`${s.btnPrimary} ${isNeo ? "bg-[#D8B4FE]" : "bg-purple-600 text-white hover:bg-purple-700"}`}>
+                  START LEARN <ArrowRight className="h-6 w-6" />
                 </Link>
                 <Link to="/about" className={s.btnSecondary} style={!isNeo ? { backgroundColor: 'var(--card-bg)' } : {}}>
                   OUR MISSION
@@ -209,7 +212,7 @@ const Index = () => {
                   playsInline
                   className="w-full h-[350px] md:h-[450px] lg:h-[550px] object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
                 >
-                  <source src="/shikshak-hero.mp4" type="video/mp4" />
+                  <source src="/background-video.mp4" type="video/mp4" />
                 </video>
               </div>
             </div>

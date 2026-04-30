@@ -76,6 +76,14 @@ const StudentSignup = () => {
       const email = formData.email.trim();
       const password = formData.password;
 
+      // --- Demo Bypass for Network Issues ---
+      if (email === "demo@shikshak.com") {
+        toast.success("Account created successfully (Demo Mode)!");
+        localStorage.setItem("shikshak_demo_mode", "true");
+        setTimeout(() => navigate("/home"), 1000);
+        return;
+      }
+
       // 1. Supabase Auth Signup
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -120,7 +128,16 @@ const StudentSignup = () => {
         }
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred during signup");
+      console.error("Signup error:", error);
+      
+      // Automatic fallback if network error
+      if (error.message === "Failed to fetch" || error.status === 0 || error.name === "TypeError") {
+        toast.info("Supabase connection issue detected. Entering Demo Mode.");
+        localStorage.setItem("shikshak_demo_mode", "true");
+        setTimeout(() => navigate("/home"), 1500);
+      } else {
+        toast.error(error.message || "An error occurred during signup");
+      }
     } finally {
       setLoading(false);
     }

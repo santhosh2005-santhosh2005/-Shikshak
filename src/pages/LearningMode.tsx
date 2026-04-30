@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { getStyles, neoColors } from "@/lib/design-system";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CoachNudge } from "@/components/CoachNudge";
 
 type LearningType = "dyslexia" | "adhd" | "autism";
 
@@ -22,6 +23,9 @@ const LearningMode = () => {
   const [timer, setTimer] = useState(30);
   const [points, setPoints] = useState(0);
   const [currentStep, setCurrentStep] = useState(1);
+  const [activeWordIndex, setActiveWordIndex] = useState<number | null>(null);
+  const [isSimplified, setIsSimplified] = useState(false);
+  const [idleTimeSeconds, setIdleTimeSeconds] = useState(0);
   const navigate = useNavigate();
 
   const isNeo = settings.uiTheme === "neo";
@@ -56,10 +60,56 @@ const LearningMode = () => {
 
   useEffect(() => {
     if (learningType === "adhd" && timer > 0 && !showFeedback) {
-      const interval = setInterval(() => setTimer(t => t - 1), 1000);
+      const interval = setInterval(() => {
+        setTimer(t => t - 1);
+        setIdleTimeSeconds(prev => prev + 1);
+      }, 1000);
       return () => clearInterval(interval);
     }
   }, [learningType, timer, showFeedback]);
+
+  // Reset idle timer on user action
+  useEffect(() => {
+    const handleAction = () => setIdleTimeSeconds(0);
+    window.addEventListener('mousemove', handleAction);
+    window.addEventListener('click', handleAction);
+    window.addEventListener('keydown', handleAction);
+    return () => {
+      window.removeEventListener('mousemove', handleAction);
+      window.removeEventListener('click', handleAction);
+      window.removeEventListener('keydown', handleAction);
+    };
+  }, []);
+
+  const handleSpeakPassage = () => {
+    if (isReading) {
+      stopReading();
+      setActiveWordIndex(null);
+      return;
+    }
+    
+    window.speechSynthesis.cancel();
+    const textToRead = isSimplified ? lessonData.simplifiedPassage : lessonData.passage;
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        // Calculate which word we are on based on charIndex
+        const textUntilBoundary = textToRead.substring(0, event.charIndex);
+        const wordCount = textUntilBoundary.split(/\s+/).length - 1;
+        setActiveWordIndex(wordCount);
+      }
+    };
+    
+    utterance.onend = () => {
+      setActiveWordIndex(null);
+      stopReading(); // sync state
+    };
+    
+    // trigger reading state in context if needed, but local handles speech
+    window.speechSynthesis.speak(utterance);
+    readText(""); // Hack to just set isReading to true in context without it double-speaking
+  };
 
   const handleCheckAnswer = () => {
     const correct = selectedAnswer === lessonData.correctAnswer;
@@ -68,18 +118,33 @@ const LearningMode = () => {
     if (correct && learningType === "adhd") setPoints(p => p + lessonData.reward);
   };
 
-  const renderDyslexiaMode = () => (
+  const renderDyslexiaMode = () => {
+    const displayPassage = isSimplified ? lessonData.simplifiedPassage || lessonData.passage : lessonData.passage;
+    
+    return (
     <div className={`${s.card} ${isNeo ? "bg-[#D8B4FE]" : "bg-white"} p-0 overflow-hidden`}>
-      <div className={`p-6 border-b-4 border-black flex justify-between items-center ${isNeo ? "bg-white" : "bg-gray-100"}`}>
+      <div className={`p-6 border-b-4 border-black flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${isNeo ? "bg-white" : "bg-gray-100"}`}>
         <h2 className="text-2xl font-black uppercase tracking-tighter">{lessonData.title}</h2>
-        <button onClick={() => isReading ? stopReading() : readText(lessonData.passage)} className={`p-3 border-4 border-black bg-[#FEF08A] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2 font-black uppercase hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all`}>
-          {isReading ? <><VolumeX className="h-6 w-6 animate-pulse" /> STOP</> : <><Volume2 className="h-6 w-6" /> LISTEN</>}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setIsSimplified(!isSimplified)} className={`p-3 font-black uppercase transition-all ${isNeo ? (isSimplified ? "bg-black text-white border-4 border-black" : "bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none") : "bg-gray-200"}`}>
+            {isSimplified ? "Original Text" : "Simplify Text (AI)"}
+          </button>
+          <button onClick={handleSpeakPassage} className={`p-3 border-4 border-black bg-[#FEF08A] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2 font-black uppercase hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all`}>
+            {isReading ? <><VolumeX className="h-6 w-6 animate-pulse" /> STOP</> : <><Volume2 className="h-6 w-6" /> LISTEN</>}
+          </button>
+        </div>
       </div>
       <div className="p-8">
-        <div className={`mb-10 p-6 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-2xl md:text-3xl leading-relaxed font-medium`}>
-          {lessonData.passage.split(" ").map((word: string, i: number) => (
-            <span key={i} className="hover:bg-[#FEF08A] transition-colors cursor-pointer px-1 rounded">{word} </span>
+        <div className={`mb-10 p-6 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-3xl md:text-5xl leading-relaxed font-bold`}>
+          {displayPassage.split(" ").map((word: string, i: number) => (
+            <span 
+              key={i} 
+              onMouseEnter={() => setActiveWordIndex(i)}
+              onMouseLeave={() => setActiveWordIndex(null)}
+              className={`transition-all duration-200 cursor-pointer px-1 rounded inline-block ${activeWordIndex === i ? "bg-[#FEF08A] scale-110 font-black border-b-4 border-black" : "hover:bg-gray-100"}`}
+            >
+              {word} 
+            </span>
           ))}
         </div>
         <h3 className="text-xl font-black uppercase mb-6">{lessonData.question}</h3>
@@ -99,9 +164,26 @@ const LearningMode = () => {
       </div>
     </div>
   );
+  };
 
   const renderADHDMode = () => (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      <AnimatePresence>
+        {idleTimeSeconds > 10 && !showFeedback && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="sticky top-4 z-50 w-full mb-8 bg-[#FEF08A] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <Star className="text-black fill-yellow-400 w-8 h-8 animate-spin-slow" />
+              <p className="font-black uppercase text-xl">Stay focused, you're doing great!</p>
+            </div>
+            <Button onClick={() => setIdleTimeSeconds(0)} className="bg-black text-white hover:bg-gray-800 font-black uppercase rounded-none border-2 border-transparent">I'M ON IT!</Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="flex justify-between gap-4">
         <div className={`${s.card} flex-1 py-6 flex items-center justify-center gap-4 bg-[#FEF08A] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-4 border-black`}>
           <Timer className="h-10 w-10 animate-pulse" /> <span className="text-4xl font-black">{timer}s</span>
@@ -120,12 +202,47 @@ const LearningMode = () => {
           ))}
         </div>
         {selectedAnswer && !showFeedback && <button className={`${s.btnPrimary} mt-12 h-24 text-4xl w-full border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none bg-[#86EFAC]`} onClick={handleCheckAnswer}>CHECK IT!</button>}
-        {showFeedback && (
-          <div className={`mt-12 p-8 border-4 border-black font-black uppercase flex flex-col items-center gap-6 ${isCorrect ? "bg-[#86EFAC]" : "bg-[#FEF08A]"}`}>
-            <span className="text-5xl">{isCorrect ? `AMAZING! +${lessonData.reward} ⭐` : "TRY AGAIN!"}</span>
-            <button className={`${s.btnSecondary} bg-white text-2xl px-10 py-6 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none`} onClick={() => { setShowFeedback(false); setSelectedAnswer(""); setTimer(30); }}>NEXT <ArrowRight className="h-8 w-8" /></button>
-          </div>
-        )}
+        
+        <AnimatePresence>
+          {showFeedback && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.5, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className={`mt-12 p-8 border-4 border-black font-black uppercase flex flex-col items-center gap-6 relative overflow-hidden ${isCorrect ? "bg-[#86EFAC]" : "bg-[#FEF08A]"}`}
+            >
+              {isCorrect && (
+                <motion.div
+                  initial={{ rotate: -10, scale: 0 }}
+                  animate={{ rotate: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                  className="absolute -top-6 -right-6 text-9xl opacity-20"
+                >
+                  🌟
+                </motion.div>
+              )}
+              
+              <span className="text-5xl md:text-6xl text-center z-10 leading-tight">
+                {isCorrect ? (
+                  <>
+                    <span className="block mb-2">YOU ARE A ROCKSTAR!</span>
+                    <motion.span 
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-4xl bg-white border-4 border-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] inline-block"
+                    >
+                      +{lessonData.reward} REWARD!
+                    </motion.span>
+                  </>
+                ) : "TRY AGAIN! YOU GOT THIS."}
+              </span>
+              
+              <button className={`${s.btnSecondary} bg-white text-2xl px-10 py-6 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none z-10 mt-4`} onClick={() => { setShowFeedback(false); setSelectedAnswer(""); setTimer(30); }}>
+                NEXT <ArrowRight className="h-8 w-8" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -139,14 +256,24 @@ const LearningMode = () => {
       </div>
       <div className="grid md:grid-cols-2 gap-10">
         <div className="space-y-6">
-          {lessonData.steps.map((step: any) => (
-            <div key={step.id} className={`p-6 border-4 border-black transition-all ${currentStep === step.id ? "bg-[#FEF08A] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] scale-105" : "bg-gray-50 opacity-60"}`}>
-              <h3 className="font-black uppercase text-xl mb-2">{step.title}</h3>
-              <p className="font-bold text-lg">{step.content}</p>
-            </div>
-          ))}
+          <AnimatePresence mode="wait">
+            {lessonData.steps.map((step: any) => (
+              currentStep === step.id && (
+                <motion.div 
+                  key={step.id} 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className={`p-10 border-4 border-black bg-[#BFDBFE] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
+                >
+                  <h3 className="font-black uppercase text-2xl mb-4">{step.title}</h3>
+                  <p className="font-bold text-xl leading-relaxed">{step.content}</p>
+                </motion.div>
+              )
+            ))}
+          </AnimatePresence>
           {currentStep <= lessonData.steps.length && (
-            <button className={`${s.btnPrimary} w-full h-20 text-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none bg-[#86EFAC]`} onClick={() => setCurrentStep(prev => prev + 1)}>
+            <button className={`${s.btnPrimary} w-full h-24 text-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none bg-[#86EFAC]`} onClick={() => setCurrentStep(prev => prev + 1)}>
               I FINISHED THIS STEP <CheckCircle2 className="ml-2 h-8 w-8" />
             </button>
           )}
@@ -173,6 +300,7 @@ const LearningMode = () => {
 
   return (
     <ScrollArea className="h-screen" style={!isNeo ? { backgroundColor: 'var(--app-bg)' } : { backgroundColor: '#ffffff' }}>
+      <CoachNudge learningType={learningType} />
       <div className={`min-h-screen ${isNeo ? "font-bold bg-grid" : "font-sans"} text-black`}>
         <Navbar />
         <div className="container mx-auto pt-32 pb-20 px-4 max-w-4xl">

@@ -17,8 +17,17 @@ const StudentLogin = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
+    // demo mode check — handle BEFORE setLoading to avoid finally block interference
+    if (email.trim() === "demo@shikshak.com" && password === "demo123") {
+      toast.success("Logged in as Demo Student");
+      localStorage.setItem("shikshak_demo_mode", "true");
+      setLoading(true);
+      setTimeout(() => navigate("/home"), 1000);
+      return;
+    }
+
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
@@ -28,15 +37,25 @@ const StudentLogin = () => {
       if (error) {
         if (error.message.includes("Email not confirmed")) {
           toast.error("Please confirm your email address before logging in. Check your inbox for the link.");
+          setLoading(false);
           return;
         }
         throw error;
       }
 
       toast.success("Welcome back to Shikshak!");
-      navigate("/home"); // Redirect to student home dashboard
+      navigate("/home");
     } catch (error: any) {
-      toast.error(error.message || "Invalid login credentials");
+      console.error("Login error:", error);
+      
+      // Automatic fallback if network error
+      if (error.message === "Failed to fetch" || error.status === 0 || error.name === "TypeError") {
+        toast.info("Supabase connection issue detected. Entering Demo Mode.");
+        localStorage.setItem("shikshak_demo_mode", "true");
+        setTimeout(() => navigate("/home"), 1500);
+      } else {
+        toast.error(error.message || "Invalid login credentials");
+      }
     } finally {
       setLoading(false);
     }
@@ -144,16 +163,14 @@ const StudentLogin = () => {
                 <Button 
                   type="button"
                   variant="outline" 
-                  onClick={handleGoogleLogin}
-                  className="w-full h-12 rounded-xl border-[#E2E8F0] hover:bg-slate-50 transition-all duration-200"
+                  onClick={() => {
+                    setEmail("demo@shikshak.com");
+                    setPassword("demo123");
+                    toast.info("Demo credentials auto-filled. Click Login.");
+                  }}
+                  className="w-full h-12 rounded-xl border-dashed border-2 border-[#6366F1] text-[#6366F1] hover:bg-indigo-50 transition-all duration-200"
                 >
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                    <path fill="#EA4335" d="M12 5.04c1.94 0 3.51.68 4.75 1.81l3.55-3.55C18.1 1.31 15.3 0 12 0 7.31 0 3.32 2.67 1.34 6.6l4.13 3.21C6.46 6.95 9 5.04 12 5.04z" />
-                    <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58l3.89 3.01c2.27-2.11 3.53-5.21 3.53-8.83z" />
-                    <path fill="#FBBC05" d="M5.47 14.19c-.27-.79-.42-1.63-.42-2.51s.15-1.72.42-2.51L1.34 6.6C.49 8.24 0 10.07 0 12s.49 3.76 1.34 5.4l4.13-3.21z" />
-                    <path fill="#34A853" d="M12 24c3.24 0 5.97-1.07 7.96-2.91l-3.89-3.01c-1.1.74-2.5 1.18-4.07 1.18-3 0-5.54-1.91-6.46-4.75L1.34 17.4C3.32 21.33 7.31 24 12 24z" />
-                  </svg>
-                  Continue with Google
+                  Login as Guest (Demo Mode)
                 </Button>
               </div>
             </form>

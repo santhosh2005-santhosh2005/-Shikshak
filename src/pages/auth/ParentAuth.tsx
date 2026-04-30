@@ -113,7 +113,24 @@ const ParentAuth = () => {
         }
       }
     } catch (error: any) {
-      toast.error(error.message || "Authentication failed");
+      console.error("Parent auth error:", error);
+      
+      // Automatic fallback if network error
+      if (error.message === "Failed to fetch" || error.status === 0 || error.name === "TypeError") {
+        toast.info("Supabase connection issue detected. Entering Demo Mode.");
+        localStorage.setItem("shikshak_demo_mode", "true");
+        localStorage.setItem("shikshak_demo_parent", JSON.stringify({
+          full_name: formData.fullName || "John Doe (Parent)",
+          student_name: formData.studentName || "Alex Student",
+          school_name: formData.schoolName || "Shikshak Academy",
+          student_class: formData.studentClass || "Class 10",
+          relationship: formData.relationship || "Guardian",
+          email: formData.email || "parent@shikshak.com"
+        }));
+        setTimeout(() => navigate("/parent-digest"), 1500);
+      } else {
+        toast.error(error.message || "Authentication failed");
+      }
     } finally {
       setLoading(false);
     }

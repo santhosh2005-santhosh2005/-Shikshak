@@ -205,16 +205,48 @@ const ParentDashboard = () => {
             {/* Header */}
             <div className="flex justify-between items-end">
               <div>
-                <h1 className="text-3xl font-black text-[#1E293B]">Learning Journey</h1>
+                <h1 className="text-3xl font-black text-[#1E293B]">Today’s Report</h1>
                 <p className="text-[#64748B] font-medium">Tracking {childData?.full_name}'s neuro-adaptive growth.</p>
               </div>
               <div className="flex gap-2">
                 <div className="bg-white px-4 py-2 rounded-xl border border-[#E2E8F0] shadow-sm flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-teal-600" />
-                  <span className="text-xs font-bold text-[#1E293B]">April 2026</span>
+                  <span className="text-xs font-bold text-[#1E293B]">April 30, 2026</span>
                 </div>
               </div>
             </div>
+
+            {/* Daily Summary Section */}
+            <Card className="border-none shadow-sm rounded-3xl p-8 bg-white border-l-8 border-teal-500">
+              <div className="space-y-4">
+                <h2 className="text-2xl font-black text-[#1E293B]">Daily Summary</h2>
+                <p className="text-xl text-[#64748B] leading-relaxed">
+                  Your child had a <span className="text-teal-600 font-bold">highly productive session</span> today. They showed significant focus in phonological awareness games and completed all assigned reading tasks with <span className="text-indigo-600 font-bold">85% accuracy</span>.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-black text-[#1E293B] uppercase tracking-wider flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Key Observations
+                    </h3>
+                    <ul className="space-y-2 text-sm text-[#64748B]">
+                      <li className="flex items-start gap-2">• Rapidly identified beginning sounds in 10/10 words.</li>
+                      <li className="flex items-start gap-2">• Stayed engaged for a continuous 12-minute block.</li>
+                      <li className="flex items-start gap-2">• Used the Reading Ruler tool effectively for tracking.</li>
+                    </ul>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-black text-[#1E293B] uppercase tracking-wider flex items-center gap-2">
+                      <Star className="w-4 h-4 text-amber-500" /> Suggestions
+                    </h3>
+                    <ul className="space-y-2 text-sm text-[#64748B]">
+                      <li className="flex items-start gap-2">• Practice "B" and "D" sound discrimination tonight.</li>
+                      <li className="flex items-start gap-2">• Encourage 5 minutes of quiet reading before bed.</li>
+                      <li className="flex items-start gap-2">• Provide positive reinforcement for today's effort.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </Card>
 
             {/* Performance Overview Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

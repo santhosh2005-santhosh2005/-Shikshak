@@ -17,6 +17,8 @@ export const Navbar = () => {
   const isNeo = settings.uiTheme === "neo";
   const isHomePage = location.pathname === "/";
 
+  const isActive = (path: string) => location.pathname === path;
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -26,18 +28,31 @@ export const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { text: "Home", href: "/" },
+    { text: "Home", href: "/home" },
     { text: "Start Learning", href: "/tests" },
-    { text: "Improve", href: "/improve" },
     { text: "AI Chat", href: "/ai-chat" },
-    { text: "Course", href: "/course" },
+    { text: "Course Room", href: "/course" },
+    { text: "Progress", href: "/improve" },
     { text: "Dashboard", href: "/teacher-dashboard" },
     { text: "Report", href: "/parent-digest" },
     { text: "Support", href: "/support" },
     { text: "About", href: "/about" },
   ];
 
-  const isActive = (href: string) => location.pathname === href;
+  const handleSignOut = async () => {
+    try {
+      localStorage.removeItem("shikshak_demo_mode");
+      localStorage.removeItem("shikshak_demo_teacher");
+      localStorage.removeItem("shikshak_demo_parent");
+      await signOut();
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      navigate("/auth/role-selection", { replace: true });
+    }
+  };
+
+  const isDemo = localStorage.getItem("shikshak_demo_mode") === "true";
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
@@ -47,39 +62,41 @@ export const Navbar = () => {
           ? "bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" 
           : "bg-white/80 backdrop-blur-md rounded-2xl border shadow-sm"
         }`}>
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
             <div className={`h-10 w-10 flex items-center justify-center font-black text-2xl ${isNeo ? "bg-black text-white" : "bg-primary text-white rounded-xl"}`}>S</div>
             <span className={`text-2xl font-black uppercase tracking-tighter ${isNeo ? "text-black" : "text-slate-900"}`}>Shikshak</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.text}
-                to={link.href}
-                className={`px-4 py-2 text-sm font-black uppercase transition-all ${
-                  isActive(link.href)
-                    ? (isNeo ? "bg-black text-white" : "text-primary bg-primary/10 rounded-lg")
-                    : (isNeo ? "text-black hover:bg-black/5" : "text-slate-600 hover:text-primary")
-                }`}
-              >
-                {link.text}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center space-x-2 overflow-x-auto no-scrollbar px-4">
+            <div className="flex items-center gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.text}
+                  to={link.href}
+                  className={`px-3 py-1.5 text-[11px] font-black uppercase transition-all whitespace-nowrap ${
+                    isActive(link.href)
+                      ? (isNeo ? "bg-black text-white" : "text-primary bg-primary/10 rounded-lg")
+                      : (isNeo ? "text-black hover:bg-black/5" : "text-slate-600 hover:text-primary")
+                  }`}
+                >
+                  {link.text}
+                </Link>
+              ))}
+            </div>
             
-            <div className="ml-4 flex items-center space-x-2 border-l pl-4 border-black/10">
-              {user ? (
+            <div className="flex items-center space-x-2 border-l pl-4 border-black/10 shrink-0">
+              {user || isDemo ? (
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => signOut()}
+                  onClick={handleSignOut}
                   className={isNeo ? "border-4 border-black font-black uppercase rounded-none" : "rounded-xl"}
                 >
                   Sign Out
                 </Button>
               ) : (
-                <Link to="/signin">
+                <Link to="/auth/role-selection">
                   <Button 
                     size="sm" 
                     className={isNeo ? "bg-black text-white border-4 border-black font-black uppercase rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" : "rounded-xl"}

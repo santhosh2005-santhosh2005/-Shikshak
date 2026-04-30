@@ -330,6 +330,52 @@ const TeacherDashboard = () => {
 
                   {/* Main Charts Grid */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Weak Areas Card */}
+                    <Card className="border-none shadow-sm rounded-3xl p-6 bg-white">
+                      <CardHeader className="px-0 pt-0">
+                        <CardTitle className="text-lg font-bold flex items-center gap-2 text-rose-600">
+                          <Target className="w-5 h-5" /> Weak Areas
+                        </CardTitle>
+                        <CardDescription>Identifying critical learning gaps</CardDescription>
+                      </CardHeader>
+                      <div className="space-y-4 mt-4">
+                        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100">
+                          <h4 className="font-bold text-rose-900 text-sm mb-1">Phonological Processing</h4>
+                          <p className="text-xs text-rose-700">Struggles with segmenting multisyllabic words and identifying final phonemes.</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100">
+                          <h4 className="font-bold text-amber-900 text-sm mb-1">Visual Working Memory</h4>
+                          <p className="text-xs text-amber-700">Difficulty recalling sequences of 4+ visual elements in rapid succession.</p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Suggested Actions Card */}
+                    <Card className="border-none shadow-sm rounded-3xl p-6 bg-white">
+                      <CardHeader className="px-0 pt-0">
+                        <CardTitle className="text-lg font-bold flex items-center gap-2 text-indigo-600">
+                          <Zap className="w-5 h-5" /> Suggested Actions
+                        </CardTitle>
+                        <CardDescription>Recommended educational interventions</CardDescription>
+                      </CardHeader>
+                      <div className="space-y-4 mt-4">
+                        <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                          <div className="bg-indigo-100 p-2 rounded-lg mt-1"><BookOpen className="w-3 h-3 text-indigo-600" /></div>
+                          <div>
+                            <p className="text-xs font-bold text-[#1E293B]">Multisensory Reading</p>
+                            <p className="text-[10px] text-[#64748B]">Introduce sand-tracing for new phonemes this week.</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                          <div className="bg-emerald-100 p-2 rounded-lg mt-1"><CheckCircle2 className="w-3 h-3 text-emerald-600" /></div>
+                          <div>
+                            <p className="text-xs font-bold text-[#1E293B]">Timed Breaks</p>
+                            <p className="text-[10px] text-[#64748B]">Implement a 10-2-10 focus schedule for core tasks.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+
                     {/* Performance Bar Chart */}
                     <Card className="border-none shadow-sm rounded-3xl p-6 bg-white">
                       <CardHeader className="px-0 pt-0">
